@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "242383778526",
+    "project_id": "smoking-cessation-78e14",
+    "storage_bucket": "smoking-cessation-78e14.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242383778526:android:b12c3db54f7bf2cd39c84f",
+        "android_client_info": {
+          "package_name": "com.smartquit.breathfree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242383778526-kvq837qfrqn423ffnld9gdkns07ssosu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpwntoyQxjluM49OJ6aMGhnsBwCwQxHco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242383778526-kvq837qfrqn423ffnld9gdkns07ssosu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "242383778526-mia579gpv0j7ak35g76rhpbc7sll9kkh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.breatheFree"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

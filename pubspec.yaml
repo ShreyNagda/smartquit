@@ -1,0 +1,72 @@
+name: breathe_free
+description: BreatheFree — A smart smoking cessation companion with wearable integration, family monitoring, and a robust distraction engine.
+publish_to: "none"
+version: 2.0.0+1
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Firebase
+  firebase_core: ^2.25.4
+  firebase_auth: ^4.17.4
+  cloud_firestore: ^4.15.4
+  firebase_messaging: ^14.7.15
+  firebase_analytics: ^10.8.7
+  google_sign_in: ^6.2.1
+
+  # UI
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.5.0
+  lottie: ^3.1.0
+  # confetti_widget: ^0.7.0
+  fl_chart: ^0.66.2
+  percent_indicator: ^4.2.3
+
+  # Utilities
+  uuid: ^4.3.3
+  intl: ^0.19.0
+  shared_preferences: ^2.2.2
+  vibration: ^3.1.6
+  audioplayers: ^6.0.0
+  path_provider: ^2.1.2
+
+  # Icons
+  cupertino_icons: ^1.0.6
+  flutter_svg: ^2.0.9
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  riverpod_generator: ^2.3.9
+  build_runner: ^2.4.8
+  change_app_package_name: ^1.4.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/audio/
+    - assets/lottie/
+
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Regular.ttf
+        - asset: assets/fonts/Montserrat-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Montserrat-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Montserrat-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Montserrat-Light.ttf
+          weight: 300
