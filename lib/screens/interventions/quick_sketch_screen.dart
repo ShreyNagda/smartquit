@@ -140,42 +140,46 @@ class _QuickSketchScreenState extends ConsumerState<QuickSketchScreen> {
   }
 
   Widget _buildStart() {
-    return Container(
-      color: AppColors.background,
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('🎨', style: TextStyle(fontSize: 64)),
-          const SizedBox(height: 24),
-          const Text(
-            'Quick Sketch',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'Montserrat',
-              color: AppColors.textPrimary,
-            ),
+    return SafeArea(
+      child: Container(
+        color: AppColors.background,
+        padding: const EdgeInsets.all(32),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('🎨', style: TextStyle(fontSize: 64)),
+              const SizedBox(height: 24),
+              const Text(
+                'Quick Sketch',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Montserrat',
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'You have 60 seconds to doodle freely.\n\n'
+                'Draw anything — shapes, patterns, words.\n'
+                'The goal is to occupy your hands.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'Montserrat',
+                  color: AppColors.textSecondary,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: _startDrawing,
+                child: const Text('Start Drawing'),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'You have 60 seconds to doodle freely.\n\n'
-            'Draw anything — shapes, patterns, words.\n'
-            'The goal is to occupy your hands.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 15,
-              fontFamily: 'Montserrat',
-              color: AppColors.textSecondary,
-              height: 1.6,
-            ),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: _startDrawing,
-            child: const Text('Start Drawing'),
-          ),
-        ],
+        ),
       ),
     );
   }
