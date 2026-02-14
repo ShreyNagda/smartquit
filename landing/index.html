@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartQuit — Research-Based Smoking Cessation Ecosystem</title>
+    <link rel="icon" type="image/png" href="assets/favicon.ico" />
+    <meta
+      name="description"
+      content="SmartQuit: A research pr oject combining the SmartQuit Band wearable with BreatheFree companion app for comprehensive smoking cessation support."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #5b7553;
+        --primary-light: #8faf85;
+        --primary-dark: #3d5038;
+        --secondary: #d4a574;
+        --secondary-light: #e8cdb0;
+        --accent: #e07a5f;
+        --accent-light: #f2a98b;
+        --bg: #f5f0eb;
+        --surface: #ffffff;
+        --text-primary: #2c2c2c;
+        --text-secondary: #6b6b6b;
+        --text-light: #9e9e9e;
+      }
+
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: var(--bg);
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 80px 24px;
+        background: linear-gradient(
+          135deg,
+          var(--bg) 0%,
+          var(--secondary-light) 100%
+        );
+      }
+
+      .logo {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 32px;
+        border-radius: 32px;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .hero h1 {
+        font-size: 56px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        color: var(--primary-dark);
+        line-height: 1.2;
+      }
+
+      .hero .tagline {
+        font-size: 24px;
+        color: var(--text-secondary);
+        margin-bottom: 48px;
+        max-width: 600px;
+      }
+
+      .hero .cta-primary {
+        background: var(--primary);
+        color: white;
+        padding: 18px 48px;
+        border-radius: 16px;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 600;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(91, 117, 83, 0.3);
+      }
+
+      .hero .cta-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(91, 117, 83, 0.4);
+      }
+
+      /* Section Base */
+      section {
+        padding: 100px 24px;
+      }
+
+      .section-title {
+        font-size: 42px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 16px;
+        color: var(--primary-dark);
+      }
+
+      .section-subtitle {
+        font-size: 18px;
+        text-align: center;
+        color: var(--text-secondary);
+        margin-bottom: 64px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Problem Section */
+      .problem {
+        background: var(--surface);
+      }
+
+      .problem-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 32px;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .problem-card {
+        background: var(--bg);
+        padding: 32px;
+        border-radius: 20px;
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .problem-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .problem-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+
+      .problem-card h3 {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: var(--primary);
+      }
+
+      .problem-card p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      /* Solution Section */
+      .solution {
+        background: linear-gradient(
+          135deg,
+          var(--primary-light) 0%,
+          var(--primary) 100%
+        );
+        color: white;
+      }
+
+      .solution .section-title,
+      .solution .section-subtitle {
+        color: white;
+      }
+
+      .solution-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 32px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .solution-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 36px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .solution-card h3 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .solution-icon {
+        font-size: 32px;
+      }
+
+      .solution-card p {
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.7;
+      }
+
+      /* Process Section */
+      .process {
+        background: var(--surface);
+      }
+
+      .process-timeline {
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .process-step {
+        display: flex;
+        gap: 32px;
+        margin-bottom: 48px;
+        align-items: flex-start;
+      }
+
+      .step-number {
+        min-width: 60px;
+        height: 60px;
+        background: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .step-content h3 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--primary-dark);
+      }
+
+      .step-content p {
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+
+      /* Components Section */
+      .components {
+        background: var(--bg);
+      }
+
+      .component-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .component-card {
+        background: var(--surface);
+        padding: 28px;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+      }
+
+      .component-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+
+      .component-emoji {
+        font-size: 48px;
+        margin-bottom: 12px;
+      }
+
+      .component-card h4 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--primary);
+      }
+
+      .component-card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      /* CTA Section */
+      .cta-section {
+        background: linear-gradient(
+          135deg,
+          var(--accent) 0%,
+          var(--accent-light) 100%
+        );
+        color: white;
+        text-align: center;
+        padding: 100px 24px;
+      }
+
+      .cta-section h2 {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 24px;
+      }
+
+      .cta-section p {
+        font-size: 20px;
+        margin-bottom: 40px;
+        opacity: 0.95;
+      }
+
+      .cta-button {
+        background: white;
+        color: var(--accent);
+        padding: 20px 56px;
+        border-radius: 16px;
+        text-decoration: none;
+        font-size: 20px;
+        font-weight: 600;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Footer */
+      footer {
+        background: var(--primary-dark);
+        color: white;
+        padding: 48px 24px;
+        text-align: center;
+      }
+
+      footer p {
+        margin-bottom: 8px;
+        opacity: 0.9;
+      }
+
+      footer a {
+        color: var(--secondary-light);
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 36px;
+        }
+
+        .hero .tagline {
+          font-size: 18px;
+        }
+
+        .section-title {
+          font-size: 32px;
+        }
+
+        .process-step {
+          flex-direction: column;
+        }
+
+        .cta-section h2 {
+          font-size: 32px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Hero Section -->
+    <section class="hero">
+      <img src="assets/logo.png" alt="SmartQuit Logo" class="logo" />
+      <h1>SmartQuit</h1>
+      <p class="tagline">
+        A research-driven smoking cessation ecosystem combining the SmartQuit
+        Band wearable with BreatheFree companion app — powered by multimodal AI
+        analysis
+      </p>
+      <a href="#learn-more" class="cta-primary">Explore the Research</a>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem">
+      <div class="container">
+        <h2 class="section-title">The Challenge</h2>
+        <p class="section-subtitle">
+          Smoking addiction affects millions globally. Traditional cessation
+          methods often fail due to lack of real-time intervention and objective
+          tracking.
+        </p>
+
+        <div class="problem-grid">
+          <div class="problem-card">
+            <div class="problem-icon">🚬</div>
+            <h3>Manual Tracking Fails</h3>
+            <p>
+              Self-reporting is unreliable and creates cognitive burden during
+              vulnerable moments
+            </p>
+          </div>
+
+          <div class="problem-card">
+            <div class="problem-icon">👨‍👩‍👧</div>
+            <h3>Family Disconnect</h3>
+            <p>
+              Loved ones want to help but lack visibility into smoking patterns
+              and progress
+            </p>
+          </div>
+
+          <div class="problem-card">
+            <div class="problem-icon">🏥</div>
+            <h3>Limited Consultant Tools</h3>
+            <p>
+              Rehab consultants need objective data to provide personalized
+              guidance and track client outcomes
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section id="learn-more" class="solution">
+      <div class="container">
+        <h2 class="section-title">The SmartQuit Ecosystem</h2>
+        <p class="section-subtitle">
+          A complete smoking cessation package combining hardware and software
+          for users, families, and consultants
+        </p>
+
+        <div class="solution-grid">
+          <div class="solution-card">
+            <h3><span class="solution-icon">⌚</span> SmartQuit Band</h3>
+            <p>
+              Wearable watch with ESP32 microcontroller, MQ9 gas sensor (smoke
+              detection), and MPU6050 IMU (gesture recognition). Runs TinyML
+              models on-device for real-time smoking event detection with 90%+
+              accuracy.
+            </p>
+          </div>
+
+          <div class="solution-card">
+            <h3><span class="solution-icon">📱</span> BreatheFree App</h3>
+            <p>
+              Flutter-based companion app with 10 evidence-based interventions,
+              real-time progress tracking, and pattern analysis. Connects via
+              BLE for seamless data sync.
+            </p>
+          </div>
+
+          <div class="solution-card">
+            <h3><span class="solution-icon">🔬</span> Multimodal Analysis</h3>
+            <p>
+              Fuses motion data (MPU6050), gas sensor readings (MQ9), and
+              behavioral inputs to create comprehensive smoking profiles using
+              edge AI inference.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process">
+      <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">
+          Multimodal sensor fusion and behavioral intervention pipeline
+        </p>
+
+        <div class="process-timeline">
+          <div class="process-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Sensor Data Collection</h3>
+              <p>
+                ESP32 continuously reads MPU6050 accelerometer/gyroscope data at
+                50Hz and MQ9 gas sensor at 1Hz. The 6-axis IMU detects
+                hand-to-mouth gestures while the gas sensor identifies volatile
+                organic compounds from cigarette smoke.
+              </p>
+            </div>
+          </div>
+
+          <div class="process-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Edge AI Inference</h3>
+              <p>
+                On-device TinyML model (trained via Edge Impulse) performs
+                spectral analysis on sensor streams. When gesture pattern +
+                smoke signature align, the model classifies the event as
+                "smoking" with confidence score.
+              </p>
+            </div>
+          </div>
+
+          <div class="process-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>BLE Notification</h3>
+              <p>
+                SmartQuit Band sends encrypted event notification via Bluetooth
+                Low Energy to BreatheFree app. Only high-confidence events
+                (>85%) are transmitted, preserving battery life.
+              </p>
+            </div>
+          </div>
+
+          <div class="process-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h3>Immediate Intervention</h3>
+              <p>
+                BreatheFree app prompts user to log triggers and mood state.
+                Launches contextual intervention (breathing, games, mindfulness)
+                based on detected emotional state and location.
+              </p>
+            </div>
+          </div>
+
+          <div class="process-step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+              <h3>Multi-Stakeholder Insights</h3>
+              <p>
+                Dashboard analytics accessible to user, family members (with
+                consent), and rehab consultants. Temporal heatmaps, trigger
+                analysis, and progress metrics inform personalized support
+                strategies.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Components Section -->
+    <section class="components">
+      <div class="container">
+        <h2 class="section-title">System Components</h2>
+        <p class="section-subtitle">
+          Hardware and software architecture of the SmartQuit ecosystem
+        </p>
+
+        <div class="component-grid">
+          <div class="component-card">
+            <div class="component-emoji">🔌</div>
+            <h4>ESP32 Controller</h4>
+            <p>Dual-core processor with BLE for low-power wearable operation</p>
+          </div>
+
+          <div class="component-card">
+            <div class="component-emoji">💨</div>
+            <h4>MQ9 Gas Sensor</h4>
+            <p>Detects CO and combustible gases from cigarette smoke</p>
+          </div>
+
+          <div class="component-card">
+            <div class="component-emoji">📐</div>
+            <h4>MPU6050 IMU</h4>
+            <p>6-axis motion tracking for gesture pattern recognition</p>
+          </div>
+
+          <div class="component-card">
+            <div class="component-emoji">🤖</div>
+            <h4>TinyML Model</h4>
+            <p>Edge Impulse-trained neural network running on ESP32</p>
+          </div>
+
+          <div class="component-card">
+            <div class="component-emoji">🆘</div>
+            <h4>Panic Button</h4>
+            <p>Instant intervention access in BreatheFree app</p>
+          </div>
+
+          <div class="component-card">
+            <div class="component-emoji">🧘</div>
+            <h4>10 Interventions</h4>
+            <p>Breathing, games, mindfulness, sketching techniques</p>
+          </div>
+
+          <div class="component-card">
+            <div class="component-emoji">📊</div>
+            <h4>Analytics Dashboard</h4>
+            <p>Multi-user access for patients, families, consultants</p>
+          </div>
+
+          <div class="component-card">
+            <div class="component-emoji">🔒</div>
+            <h4>Privacy-First Design</h4>
+            <p>Local SQLite storage, encrypted BLE, consent-based sharing</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="download" class="cta-section">
+      <div class="container">
+        <h2>SmartQuit Research Project</h2>
+        <p>
+          This is an open research project designed for smoking cessation
+          support. Ideal for individuals trying to quit, family members
+          providing support, and consultants guiding rehab programs.
+        </p>
+        <a
+          href="https://github.com/ShreyNagda/smartquit/releases/tag/TestRelease01"
+          class="cta-button"
+          download
+          >Download BreatheFree App</a
+        >
+        <p style="margin-top: 24px; font-size: 16px; opacity: 0.9">
+          Hardware specs: ESP32 + MQ9 + MPU6050 | Software: Flutter + TinyML
+        </p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <p>
+          <strong>SmartQuit Research Project</strong> — Combining SmartQuit Band
+          + BreatheFree App 🌿
+        </p>
+        <p>ESP32 · MQ9 Gas Sensor · MPU6050 IMU · TinyML · Flutter · BLE</p>
+        <p style="margin-top: 12px; font-size: 15px">
+          <strong>For:</strong> Smoking cessation patients • Family members •
+          Rehab consultants
+        </p>
+        <p style="margin-top: 16px; font-size: 14px">
+          <a href="https://github.com/ShreyNagda/smartquit"
+            >Technical Documentation</a
+          >
+          •
+          <a href="mailto:shreynagda2714@gmail.com">Research Inquiries</a>
+        </p>
+        <p style="margin-top: 24px; font-size: 13px; opacity: 0.7">
+          © 2026 SmartQuit Research Project. Open-source research initiative.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
