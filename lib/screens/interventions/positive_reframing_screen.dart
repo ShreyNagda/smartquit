@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
+import '../../providers/intervention_provider.dart';
+import '../../services/haptic_service.dart';
 import '../../providers/intervention_provider.dart';
 
 /// Positive Reframing: CBT affirmation card-swipe deck.
@@ -97,7 +98,7 @@ class _PositiveReframingScreenState
   }
 
   void _onSwipe(int index) {
-    HapticFeedback.lightImpact();
+    ref.read(hapticServiceProvider).light();
     setState(() => _currentIndex = index);
 
     if (index >= _affirmations.length - 1) {

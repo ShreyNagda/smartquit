@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/firebase_service.dart';
 import 'auth_provider.dart';
+import 'user_provider.dart';
 
 /// Enum of all 10 intervention activities.
 enum InterventionType {
@@ -130,8 +131,29 @@ class InterventionNotifier extends StateNotifier<InterventionState> {
 
   /// Randomly select an intervention (Panic Button pressed).
   InterventionType launchRandomIntervention() {
-    final interventions = InterventionType.values;
-    final selected = interventions[_random.nextInt(interventions.length)];
+    // Get user's selected interventions
+    final user = _ref.read(userStreamProvider).valueOrNull;
+    final selectedNames = user?.preferences.selectedInterventions ?? [];
+
+    // Filter interventions based on user selection
+    List<InterventionType> availableInterventions;
+    if (selectedNames.isEmpty) {
+      // If no selection, use all interventions
+      availableInterventions = InterventionType.values;
+    } else {
+      // Only use selected interventions
+      availableInterventions = InterventionType.values
+          .where((i) => selectedNames.contains(i.displayName))
+          .toList();
+    }
+
+    // Fallback to all if somehow empty
+    if (availableInterventions.isEmpty) {
+      availableInterventions = InterventionType.values;
+    }
+
+    final selected =
+        availableInterventions[_random.nextInt(availableInterventions.length)];
 
     state = InterventionState(
       currentIntervention: selected,

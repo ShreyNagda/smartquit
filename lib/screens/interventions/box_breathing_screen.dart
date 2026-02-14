@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/intervention_provider.dart';
+import '../../services/haptic_service.dart';
 
 /// Box Breathing: Haptic-guided 4-4-4-4 rhythm.
 class BoxBreathingScreen extends ConsumerStatefulWidget {
@@ -67,7 +67,7 @@ class _BoxBreathingScreenState extends ConsumerState<BoxBreathingScreen>
     _animController.forward(from: 0);
 
     // Haptic at start of each phase
-    HapticFeedback.mediumImpact();
+    ref.read(hapticServiceProvider).medium();
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -76,7 +76,7 @@ class _BoxBreathingScreenState extends ConsumerState<BoxBreathingScreen>
       });
 
       // Light haptic each second
-      HapticFeedback.lightImpact();
+      ref.read(hapticServiceProvider).light();
 
       if (_countdown <= 0) {
         timer.cancel();
@@ -102,7 +102,7 @@ class _BoxBreathingScreenState extends ConsumerState<BoxBreathingScreen>
   void _complete() {
     _timer?.cancel();
     setState(() => _isActive = false);
-    HapticFeedback.heavyImpact();
+    ref.read(hapticServiceProvider).heavy();
     ref.read(interventionProvider.notifier).completeIntervention();
     _showCompletionDialog();
   }

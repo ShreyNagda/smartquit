@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/intervention_provider.dart';
+import '../../services/haptic_service.dart';
 
 /// Guided Visualization: A 2-minute audio-visual "safe space" builder.
 class GuidedVisualizationScreen extends ConsumerStatefulWidget {
@@ -18,6 +19,7 @@ class _GuidedVisualizationScreenState
     extends ConsumerState<GuidedVisualizationScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _bgController;
+  final AudioPlayer _audioPlayer = AudioPlayer();
   Timer? _timer;
   int _secondsRemaining = 120; // 2 minutes
   int _currentScene = 0;
@@ -82,10 +84,21 @@ class _GuidedVisualizationScreenState
     )..repeat(reverse: true);
   }
 
+  Future<void> _playTransitionSound() async {
+    try {
+      // Play a soft chime sound for scene transitions
+      await _audioPlayer.play(AssetSource('audio/chime.mp3'), volume: 0.5);
+    } catch (e) {
+      // Silently fail if audio file doesn't exist
+      debugPrint('Audio playback error: $e');
+    }
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
     _bgController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -96,12 +109,21 @@ class _GuidedVisualizationScreenState
       _secondsRemaining = 120;
     });
 
+    int previousScene = 0;
+
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() {
         _secondsRemaining--;
         _currentScene = (120 - _secondsRemaining) ~/ 20;
         if (_currentScene >= _scenes.length) {
           _currentScene = _scenes.length - 1;
+        }
+
+        // Trigger feedback on scene change
+        if (_currentScene != previousScene) {
+          ref.read(hapticServiceProvider).light();
+          _playTransitionSound();
+          previousScene = _currentScene;
         }
       });
 
@@ -114,18 +136,19 @@ class _GuidedVisualizationScreenState
   void _complete() {
     _timer?.cancel();
     setState(() => _isActive = false);
-    HapticFeedback.heavyImpact();
+    ref.read(hapticServiceProvider).heavy();
+    _playTransitionSound();
     ref.read(interventionProvider.notifier).completeIntervention();
 
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.landscape, color: AppColors.primary),
-            const SizedBox(width: 8),
-            const Text('Safe Space Complete'),
+            SizedBox(width: 8),
+            Text('Safe Space Complete'),
           ],
         ),
         content: const Text(

@@ -125,6 +125,7 @@ class _PanicButtonSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 48),
       decoration: const BoxDecoration(
         color: AppColors.background,
@@ -162,7 +163,15 @@ class _PanicButtonSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          const PanicButton(),
+          PanicButton(
+            onPressed: (route) {
+              print("Panic button launched intervention with route: $route");
+              // Close the sheet first
+              Navigator.pop(context);
+              // Then navigate to the intervention
+              Navigator.of(context).pushNamed(route);
+            },
+          ),
           const SizedBox(height: 24),
           TextButton(
             onPressed: () => Navigator.pop(context),

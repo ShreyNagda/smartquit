@@ -34,22 +34,46 @@ class HomeScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Hey, ${user?.displayName ?? 'Friend'}',
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'Montserrat',
-                            color: AppColors.textPrimary,
+                        RichText(
+                          text: TextSpan(
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'Montserrat',
+                              color: AppColors.textPrimary,
+                            ),
+                            children: [
+                              TextSpan(
+                                  text:
+                                      'Hey, ${user?.displayName ?? 'Friend'}'),
+                              const WidgetSpan(
+                                alignment: PlaceholderAlignment.middle,
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 8.0),
+                                  child: Icon(
+                                    Icons.waving_hand,
+                                    color: AppColors.secondary,
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          Icons.waving_hand,
-                          color: AppColors.secondary,
-                          size: 22,
-                        ),
+                        IconButton(
+                            icon: const Icon(Icons.bluetooth_rounded),
+                            onPressed: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  margin: EdgeInsets.all(15),
+                                  content: Text(
+                                      'Bluetooth connectivity coming soon!'),
+                                ),
+                              );
+                            })
                       ],
                     ),
                     const SizedBox(height: 4),

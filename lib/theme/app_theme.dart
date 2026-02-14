@@ -181,12 +181,16 @@ class AppTheme {
         elevation: 6,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.surfaceVariant,
-        selectedColor: AppColors.primaryLight,
-        labelStyle: GoogleFonts.montserrat(fontSize: 13),
+        backgroundColor: AppColors.surface,
+        labelStyle: GoogleFonts.montserrat(fontSize: 13)
+            .copyWith(color: AppColors.textPrimary),
+        selectedColor: AppColors.primary.withOpacity(0.5),
+        secondarySelectedColor: AppColors.primaryLight.withOpacity(0.8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: AppColors.primary, width: 1.2),
         ),
+        showCheckmark: false,
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.primaryDark,

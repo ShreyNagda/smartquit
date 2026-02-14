@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'services/notification_service.dart';
+import 'services/widget_service.dart';
 
 // Screens
 import 'screens/splash_screen.dart';
@@ -58,12 +59,27 @@ Future<void> main() async {
   runApp(const ProviderScope(child: BreatheFreeApp()));
 }
 
-class BreatheFreeApp extends ConsumerWidget {
+class BreatheFreeApp extends ConsumerStatefulWidget {
   const BreatheFreeApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BreatheFreeApp> createState() => _BreatheFreeAppState();
+}
+
+class _BreatheFreeAppState extends ConsumerState<BreatheFreeApp> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  bool _widgetInitialized = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // Initialize widget service once
+    if (!_widgetInitialized) {
+      _widgetInitialized = true;
+      WidgetService.initialize(ref, _navigatorKey);
+    }
+
     return MaterialApp(
+      navigatorKey: _navigatorKey,
       title: 'BreatheFree',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,

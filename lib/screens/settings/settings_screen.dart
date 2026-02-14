@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
+import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../providers/intervention_provider.dart';
 
 /// Settings screen with preferences, privacy, and account management.
 class SettingsScreen extends ConsumerWidget {
@@ -134,6 +136,54 @@ class SettingsScreen extends ConsumerWidget {
                     ? '${user.quitDate!.month}/${user.quitDate!.day}/${user.quitDate!.year}'
                     : 'Not set',
                 onTap: () => _editQuitDate(context, ref, user.quitDate),
+              ),
+              const SizedBox(height: 24),
+
+              // Interventions
+              _sectionHeader('Preferred Interventions'),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Select at least 3 interventions for the panic button',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontFamily: 'Montserrat',
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${user.preferences.selectedInterventions.length} selected',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.w600,
+                        color:
+                            user.preferences.selectedInterventions.length >= 3
+                                ? AppColors.success
+                                : AppColors.error,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton.icon(
+                      onPressed: () => _selectInterventions(context, ref, user),
+                      icon: const Icon(Icons.tune, size: 18),
+                      label: const Text('Manage Interventions'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -401,6 +451,120 @@ class SettingsScreen extends ConsumerWidget {
             child: const Text('Delete Forever'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _selectInterventions(
+      BuildContext context, WidgetRef ref, UserModel user) {
+    final allInterventions = InterventionType.values;
+    final selected = List<String>.from(user.preferences.selectedInterventions);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Select Interventions'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Choose at least 3 interventions',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'Montserrat',
+                      color: selected.length >= 3
+                          ? AppColors.success
+                          : AppColors.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...allInterventions.map((intervention) {
+                    final isSelected =
+                        selected.contains(intervention.displayName);
+                    return CheckboxListTile(
+                      value: isSelected,
+                      onChanged: (value) {
+                        setState(() {
+                          if (value == true) {
+                            selected.add(intervention.displayName);
+                          } else {
+                            selected.remove(intervention.displayName);
+                          }
+                        });
+                      },
+                      title: Row(
+                        children: [
+                          Icon(
+                            intervention.icon,
+                            size: 20,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              intervention.displayName,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'Montserrat',
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(left: 32),
+                        child: Text(
+                          intervention.description,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Montserrat',
+                            color: AppColors.textLight,
+                          ),
+                        ),
+                      ),
+                      activeColor: AppColors.primary,
+                      dense: true,
+                    );
+                  }).toList(),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: selected.length >= 3
+                    ? () {
+                        ref
+                            .read(userActionsProvider.notifier)
+                            .updatePreferences(
+                              user.preferences.copyWith(
+                                selectedInterventions: selected,
+                              ),
+                            );
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              '${selected.length} interventions selected',
+                            ),
+                          ),
+                        );
+                      }
+                    : null,
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

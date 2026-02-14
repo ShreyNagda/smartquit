@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/intervention_provider.dart';
+import '../../services/haptic_service.dart';
 
 /// Quick Sketch: A blank canvas for 60 seconds of doodling.
 class QuickSketchScreen extends ConsumerStatefulWidget {
@@ -46,7 +46,7 @@ class _QuickSketchScreenState extends ConsumerState<QuickSketchScreen> {
   void _complete() {
     _timer?.cancel();
     setState(() => _isDrawing = false);
-    HapticFeedback.heavyImpact();
+    ref.read(hapticServiceProvider).heavy();
     ref.read(interventionProvider.notifier).completeIntervention();
 
     showDialog(

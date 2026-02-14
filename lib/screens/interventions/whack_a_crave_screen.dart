@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/intervention_provider.dart';
+import '../../services/haptic_service.dart';
 
 /// Whack-a-Crave: A fast-paced tap game to redirect motor energy.
 class WhackACraveScreen extends ConsumerStatefulWidget {
@@ -78,7 +78,7 @@ class _WhackACraveScreenState extends ConsumerState<WhackACraveScreen> {
   void _onTap(int index) {
     if (!_isPlaying || !_activePositions[index]) return;
 
-    HapticFeedback.mediumImpact();
+    ref.read(hapticServiceProvider).medium();
 
     setState(() {
       if (_isSmoke[index]) {
@@ -245,18 +245,24 @@ class _WhackACraveScreenState extends ConsumerState<WhackACraveScreen> {
 
         // 3x4 game grid
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: AspectRatio(
+                aspectRatio: 3 / 4,
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                  ),
+                  itemCount: 12,
+                  itemBuilder: (context, index) {
+                    return _buildCell(index);
+                  },
+                ),
               ),
-              itemCount: 12,
-              itemBuilder: (context, index) {
-                return _buildCell(index);
-              },
             ),
           ),
         ),

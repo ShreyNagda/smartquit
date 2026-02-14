@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/intervention_provider.dart';
+import '../../services/haptic_service.dart';
 
 /// The Water Prompt: Interactive reminder to drink water (physical substitution).
 class WaterPromptScreen extends ConsumerStatefulWidget {
@@ -51,7 +51,7 @@ class _WaterPromptScreenState extends ConsumerState<WaterPromptScreen>
   void _takeSip() {
     if (_isComplete) return;
 
-    HapticFeedback.lightImpact();
+    ref.read(hapticServiceProvider).light();
     setState(() {
       _sips++;
       _fillController.animateTo(
@@ -67,7 +67,7 @@ class _WaterPromptScreenState extends ConsumerState<WaterPromptScreen>
 
   void _complete() {
     setState(() => _isComplete = true);
-    HapticFeedback.heavyImpact();
+    ref.read(hapticServiceProvider).heavy();
     ref.read(interventionProvider.notifier).completeIntervention();
 
     Future.delayed(const Duration(seconds: 1), () {
@@ -243,13 +243,13 @@ class _WaterPromptScreenState extends ConsumerState<WaterPromptScreen>
                     ),
 
                   if (_isComplete)
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.check_circle,
                             color: AppColors.primary, size: 24),
-                        const SizedBox(width: 8),
-                        const Text(
+                        SizedBox(width: 8),
+                        Text(
                           'Glass complete!',
                           style: TextStyle(
                             fontSize: 18,

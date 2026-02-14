@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/app_theme.dart';
 import '../providers/intervention_provider.dart';
+import '../services/haptic_service.dart';
 
 /// The most prominent UI element — pulsating Panic Button.
 class PanicButton extends ConsumerStatefulWidget {
-  final VoidCallback? onInterventionLaunched;
+  final void Function(String route)? onPressed;
 
-  const PanicButton({super.key, this.onInterventionLaunched});
+  const PanicButton({super.key, this.onPressed});
 
   @override
   ConsumerState<PanicButton> createState() => _PanicButtonState();
@@ -55,7 +55,7 @@ class _PanicButtonState extends ConsumerState<PanicButton>
 
   void _onTap() {
     // Haptic feedback
-    HapticFeedback.heavyImpact();
+    ref.read(hapticServiceProvider).heavy();
 
     // Press animation
     _pressController.forward().then((_) {
@@ -66,10 +66,13 @@ class _PanicButtonState extends ConsumerState<PanicButton>
     final intervention =
         ref.read(interventionProvider.notifier).launchRandomIntervention();
 
-    widget.onInterventionLaunched?.call();
-
-    // Navigate to the intervention
-    Navigator.of(context).pushNamed(intervention.route);
+    // If parent provided a callback, let them handle navigation
+    if (widget.onPressed != null) {
+      widget.onPressed!(intervention.route);
+    } else {
+      // Otherwise navigate directly
+      Navigator.of(context).pushNamed(intervention.route);
+    }
   }
 
   @override
@@ -102,7 +105,7 @@ class _PanicButtonState extends ConsumerState<PanicButton>
               radius: 0.8,
             ),
             boxShadow: [
-              BoxShadow(
+              const BoxShadow(
                 color: AppColors.panicGlow,
                 blurRadius: 30,
                 spreadRadius: 10,

@@ -55,16 +55,24 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: _fadeAnimation,
           child: ScaleTransition(
             scale: _scaleAnimation,
-            child: const Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  '🌿',
-                  style: TextStyle(fontSize: 80),
+                Image.asset(
+                  'assets/images/logo-transparent.png',
+                  width: 120,
+                  height: 120,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.eco,
+                      size: 100,
+                      color: Colors.white,
+                    );
+                  },
                 ),
-                SizedBox(height: 24),
-                Text(
-                  'BreatheFree',
+                const SizedBox(height: 24),
+                const Text(
+                  'Breathe Free',
                   style: TextStyle(
                     fontSize: 36,
                     fontWeight: FontWeight.w700,
@@ -73,8 +81,8 @@ class _SplashScreenState extends State<SplashScreen>
                     letterSpacing: 2,
                   ),
                 ),
-                SizedBox(height: 8),
-                Text(
+                const SizedBox(height: 8),
+                const Text(
                   'V2',
                   style: TextStyle(
                     fontSize: 14,

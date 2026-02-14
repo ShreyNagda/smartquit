@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
+import '../../providers/intervention_provider.dart';
+import '../../services/haptic_service.dart';
 import '../../providers/intervention_provider.dart';
 
 /// Memory Match: 4x4 nature-themed card flip game.
@@ -57,7 +58,7 @@ class _MemoryMatchScreenState extends ConsumerState<MemoryMatchScreen> {
   void _onCardTap(int index) {
     if (_isChecking || _revealed[index] || _matched[index]) return;
 
-    HapticFeedback.lightImpact();
+    ref.read(hapticServiceProvider).light();
 
     setState(() {
       _revealed[index] = true;
@@ -73,7 +74,7 @@ class _MemoryMatchScreenState extends ConsumerState<MemoryMatchScreen> {
       // Check for match
       if (_cards[_firstIndex!] == _cards[_secondIndex!]) {
         // Match found!
-        HapticFeedback.heavyImpact();
+        ref.read(hapticServiceProvider).heavy();
         setState(() {
           _matched[_firstIndex!] = true;
           _matched[_secondIndex!] = true;

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
+import '../../providers/intervention_provider.dart';
+import '../../services/haptic_service.dart';
 import '../../providers/intervention_provider.dart';
 
 /// 5-4-3-2-1 Grounding: Interactive sensory input prompts.
@@ -71,7 +72,7 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
   }
 
   void _nextStep() {
-    HapticFeedback.mediumImpact();
+    ref.read(hapticServiceProvider).medium();
 
     // Clear controllers for next step
     for (final c in _controllers) {
@@ -86,7 +87,7 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
   }
 
   void _complete() {
-    HapticFeedback.heavyImpact();
+    ref.read(hapticServiceProvider).heavy();
     ref.read(interventionProvider.notifier).completeIntervention();
     showDialog(
       context: context,

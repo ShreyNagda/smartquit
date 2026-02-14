@@ -17,26 +17,34 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   final List<_OnboardingPage> _pages = const [
     _OnboardingPage(
-      emoji: '🌿',
+      isLogo: true,
       title: 'Welcome to BreatheFree',
       description: 'You\'ve taken the most important step. '
           'This app is your companion on the journey to a smoke-free life.',
     ),
     _OnboardingPage(
-      emoji: '🆘',
+      icon: Icons.emergency,
       title: 'Your Panic Button',
       description:
           'When a craving hits, press the big button on your home screen. '
           'We\'ll launch a random distraction activity to help you ride it out.',
     ),
     _OnboardingPage(
-      emoji: '📓',
+      icon: Icons.widgets,
+      title: 'Add Home Screen Widget',
+      description:
+          'For instant access during cravings, add the BreatheFree widget to your home screen.\n\n'
+          'Long-press your home screen → Widgets → BreatheFree → Drag the red button to your screen.',
+      isWidget: true,
+    ),
+    _OnboardingPage(
+      icon: Icons.book,
       title: 'Track Your Journey',
       description: 'Log your cravings, near-misses, and milestones. '
           'Understanding your triggers is key to staying smoke-free.',
     ),
     _OnboardingPage(
-      emoji: '👨‍👩‍👧‍👦',
+      icon: Icons.people,
       title: 'Build Your Circle',
       description: 'Invite family & friends to support you. '
           'They can see your progress and send you strength when you need it most.',
@@ -141,10 +149,73 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            page.emoji,
-            style: const TextStyle(fontSize: 80),
-          ),
+          if (page.isWidget) ...[
+            // Widget preview
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFD32F2F), Color(0xFFE07A5F)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, color: Colors.white, size: 36),
+                  SizedBox(height: 4),
+                  Text(
+                    'HELP',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else if (page.isLogo) ...[
+            // Logo image
+            Image.asset(
+              'assets/images/logo-transparent.png',
+              width: 120,
+              height: 120,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.eco,
+                  size: 100,
+                  color: AppColors.primary,
+                );
+              },
+            ),
+          ] else if (page.icon != null) ...[
+            // Icon
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                page.icon,
+                size: 56,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
           const SizedBox(height: 32),
           Text(
             page.title,
@@ -276,13 +347,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 }
 
 class _OnboardingPage {
-  final String emoji;
+  final IconData? icon;
   final String title;
   final String description;
+  final bool isWidget;
+  final bool isLogo;
 
   const _OnboardingPage({
-    required this.emoji,
+    this.icon,
     required this.title,
     required this.description,
+    this.isWidget = false,
+    this.isLogo = false,
   });
 }

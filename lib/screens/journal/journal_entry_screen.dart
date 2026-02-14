@@ -116,7 +116,6 @@ class _JournalEntryScreenState extends ConsumerState<JournalEntryScreen> {
                   label: Text(type.displayName),
                   selected: isSelected,
                   onSelected: (_) => setState(() => _eventType = type),
-                  selectedColor: AppColors.primaryLight.withOpacity(0.3),
                   labelStyle: TextStyle(
                     fontFamily: 'Montserrat',
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -151,7 +150,6 @@ class _JournalEntryScreenState extends ConsumerState<JournalEntryScreen> {
                     selected: isSelected,
                     onSelected: (_) =>
                         setState(() => _selectedTrigger = trigger),
-                    selectedColor: AppColors.secondaryLight,
                     labelStyle: TextStyle(
                       fontFamily: 'Montserrat',
                       fontSize: 13,

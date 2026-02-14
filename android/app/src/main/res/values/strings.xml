@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="panic_button">Panic Button</string>
+    <string name="widget_name">HELP</string>
+    <string name="need_help">I NEED\nHELP</string>
+    <string name="tap_for_help">Tap for instant help</string>
+    <string name="widget_description">Emergency help button: Tap anytime a craving hits to instantly launch a coping activity. Keep this on your home screen for quick access during moments of temptation.</string>
+</resources>

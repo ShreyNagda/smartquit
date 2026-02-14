@@ -136,6 +136,7 @@ class UserPreferences {
   final bool dailyReminders;
   final int reminderHour;
   final int reminderMinute;
+  final List<String> selectedInterventions;
 
   const UserPreferences({
     this.cigarettesPerDay = 20,
@@ -145,6 +146,7 @@ class UserPreferences {
     this.dailyReminders = true,
     this.reminderHour = 9,
     this.reminderMinute = 0,
+    this.selectedInterventions = const [],
   });
 
   factory UserPreferences.fromMap(Map<String, dynamic> map) {
@@ -157,6 +159,10 @@ class UserPreferences {
       dailyReminders: map['daily_reminders'] as bool? ?? true,
       reminderHour: (map['reminder_hour'] as num?)?.toInt() ?? 9,
       reminderMinute: (map['reminder_minute'] as num?)?.toInt() ?? 0,
+      selectedInterventions: (map['selected_interventions'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
     );
   }
 
@@ -169,6 +175,7 @@ class UserPreferences {
       'daily_reminders': dailyReminders,
       'reminder_hour': reminderHour,
       'reminder_minute': reminderMinute,
+      'selected_interventions': selectedInterventions,
     };
   }
 
@@ -180,6 +187,7 @@ class UserPreferences {
     bool? dailyReminders,
     int? reminderHour,
     int? reminderMinute,
+    List<String>? selectedInterventions,
   }) {
     return UserPreferences(
       cigarettesPerDay: cigarettesPerDay ?? this.cigarettesPerDay,
@@ -189,6 +197,8 @@ class UserPreferences {
       dailyReminders: dailyReminders ?? this.dailyReminders,
       reminderHour: reminderHour ?? this.reminderHour,
       reminderMinute: reminderMinute ?? this.reminderMinute,
+      selectedInterventions:
+          selectedInterventions ?? this.selectedInterventions,
     );
   }
 }
