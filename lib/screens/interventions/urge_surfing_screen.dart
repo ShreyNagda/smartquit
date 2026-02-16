@@ -17,7 +17,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _waveController;
   Timer? _timer;
-  int _secondsRemaining = 600; // 10 minutes
+  int _secondsRemaining = 120; // 10 minutes
   bool _isActive = false;
   double _waveIntensity = 1.0; // Starts high, decreases
   int _currentPhase = 0;
@@ -26,27 +26,27 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen>
     _UrgeSurfingPhase(
       title: 'The Wave Rises',
       message: 'Notice the craving building.\nDon\'t fight it — observe it.',
-      duration: 120,
+      duration: 20,
     ),
     _UrgeSurfingPhase(
       title: 'Peak Intensity',
       message: 'The wave is at its highest.\nRemember: it WILL pass.',
-      duration: 120,
+      duration: 20,
     ),
     _UrgeSurfingPhase(
       title: 'The Crest',
       message: 'You\'re riding the top.\nBreathe slowly and deeply.',
-      duration: 120,
+      duration: 20,
     ),
     _UrgeSurfingPhase(
       title: 'The Decline',
       message: 'Feel the intensity dropping.\nYou\'re doing amazing.',
-      duration: 120,
+      duration: 20,
     ),
     _UrgeSurfingPhase(
       title: 'Calm Waters',
       message: 'The wave has passed.\nYou are in control.',
-      duration: 120,
+      duration: 20,
     ),
   ];
 
@@ -147,45 +147,48 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen>
   }
 
   Widget _buildStartView() {
-    return SafeArea(
+    return Container(
+        color: AppColors.background,
+        width: double.infinity,
         child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.waves, size: 64, color: AppColors.info),
-          const SizedBox(height: 24),
-          const Text(
-            'Urge Surfing',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'Montserrat',
-              color: AppColors.textPrimary,
-            ),
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(Icons.waves, size: 64, color: AppColors.info),
+              const SizedBox(height: 24),
+              const Text(
+                'Urge Surfing',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Montserrat',
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Cravings are like ocean waves.\n'
+                'They rise, they peak, and they always pass.\n\n'
+                'Spend 10 minutes riding the wave.\n'
+                'Observe without acting.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'Montserrat',
+                  color: AppColors.textSecondary,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: _start,
+                child: const Text('Start Surfing'),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'Cravings are like ocean waves.\n'
-            'They rise, they peak, and they always pass.\n\n'
-            'Spend 10 minutes riding the wave.\n'
-            'Observe without acting.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 15,
-              fontFamily: 'Montserrat',
-              color: AppColors.textSecondary,
-              height: 1.6,
-            ),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: _start,
-            child: const Text('Start Surfing'),
-          ),
-        ],
-      ),
-    ));
+        ));
   }
 
   Widget _buildActiveView() {

@@ -146,6 +146,7 @@ class _QuickSketchScreenState extends ConsumerState<QuickSketchScreen> {
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text('🎨', style: TextStyle(fontSize: 64)),
               const SizedBox(height: 24),

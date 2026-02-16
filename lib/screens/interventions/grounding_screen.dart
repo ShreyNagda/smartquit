@@ -136,6 +136,7 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Progress
             Row(

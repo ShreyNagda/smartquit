@@ -213,6 +213,7 @@ class _PositiveReframingScreenState
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Negative thought
           Container(

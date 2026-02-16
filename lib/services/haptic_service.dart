@@ -81,5 +81,5 @@ class HapticService {
 
 /// Provider for haptic service
 final hapticServiceProvider = Provider<HapticService>((ref) {
-  return HapticService();
+  return HapticService(ref);
 });

@@ -152,8 +152,7 @@ class UserPreferences {
   factory UserPreferences.fromMap(Map<String, dynamic> map) {
     return UserPreferences(
       cigarettesPerDay: (map['cigarettes_per_day'] as num?)?.toInt() ?? 20,
-      pricePerCigarette:
-          (map['price_per_cigarette'] as num?)?.toDouble() ?? 0.50,
+      pricePerCigarette: (map['price_per_cigarette'] as num?)?.toDouble() ?? 10,
       currency: map['currency'] as String? ?? '₹',
       hapticFeedback: map['haptic_feedback'] as bool? ?? true,
       dailyReminders: map['daily_reminders'] as bool? ?? true,

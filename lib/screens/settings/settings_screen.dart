@@ -97,22 +97,6 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
 
-              // BLE Logs
-              _sectionHeader('Device Data'),
-              const SizedBox(height: 8),
-              _infoTile(
-                icon: Icons.analytics_outlined,
-                title: 'Logs',
-                value: 'View BLE data',
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const BleLogsScreen(),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
               // Smoking preferences
               _sectionHeader('Smoking Preferences'),
               const SizedBox(height: 8),
@@ -252,6 +236,22 @@ class SettingsScreen extends ConsumerWidget {
                     .updatePreferences(
                         user.preferences.copyWith(dailyReminders: v)),
                 activeColor: AppColors.primary,
+              ),
+              const SizedBox(height: 24),
+
+              // BLE Logs
+              _sectionHeader('Device Data'),
+              const SizedBox(height: 8),
+              _infoTile(
+                icon: Icons.analytics_outlined,
+                title: 'Logs',
+                value: 'View BLE data',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BleLogsScreen(),
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -459,10 +459,27 @@ class SettingsScreen extends ConsumerWidget {
           TextButton(
               onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           TextButton(
-            onPressed: () {
-              // Auth service deleteAccount
-              ref.read(authServiceProvider).deleteAccount();
+            onPressed: () async {
               Navigator.pop(ctx);
+              // Delete account and sign out
+              final success =
+                  await ref.read(authNotifierProvider.notifier).deleteAccount();
+              if (success && context.mounted) {
+                // Navigate to features screen after successful deletion
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/features',
+                  (route) => false,
+                );
+              } else if (context.mounted) {
+                // Show error if deletion failed
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content:
+                        Text('Failed to delete account. Please try again.'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+              }
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: const Text('Delete Forever'),

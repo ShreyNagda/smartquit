@@ -147,44 +147,45 @@ class _WhackACraveScreenState extends ConsumerState<WhackACraveScreen> {
   }
 
   Widget _buildStart() {
-    return SafeArea(
-        child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.sports_esports, size: 64, color: AppColors.accent),
-          const SizedBox(height: 24),
-          const Text(
-            'Whack-a-Crave',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              fontFamily: 'Montserrat',
-              color: AppColors.textPrimary,
+    return Container(
+        width: double.infinity,
+        color: AppColors.background,
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(Icons.sports_esports, size: 64, color: AppColors.accent),
+            const SizedBox(height: 24),
+            const Text(
+              'Whack-a-Crave',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                fontFamily: 'Montserrat',
+                color: AppColors.textPrimary,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Tap the 🚬 cigarettes to smash them!\n'
-            'Avoid the 🌸 flowers.\n\n'
-            'Redirect that craving energy!',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 15,
-              fontFamily: 'Montserrat',
-              color: AppColors.textSecondary,
-              height: 1.6,
+            const SizedBox(height: 16),
+            const Text(
+              'Tap the 🚬 cigarettes to smash them!\n'
+              'Avoid the 🌸 flowers.\n\n'
+              'Redirect that craving energy!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontFamily: 'Montserrat',
+                color: AppColors.textSecondary,
+                height: 1.6,
+              ),
             ),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: _startGame,
-            child: const Text('Start Whacking!'),
-          ),
-        ],
-      ),
-    ));
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: _startGame,
+              child: const Text('Start Whacking!'),
+            ),
+          ],
+        ));
   }
 
   Widget _buildGame() {

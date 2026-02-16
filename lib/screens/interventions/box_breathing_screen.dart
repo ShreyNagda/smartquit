@@ -161,6 +161,7 @@ class _BoxBreathingScreenState extends ConsumerState<BoxBreathingScreen>
       padding: const EdgeInsets.all(32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Icon(Icons.air, size: 64, color: AppColors.primary),
           const SizedBox(height: 24),
@@ -200,6 +201,7 @@ class _BoxBreathingScreenState extends ConsumerState<BoxBreathingScreen>
     return SafeArea(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Cycle indicator
           Text(

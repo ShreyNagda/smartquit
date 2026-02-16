@@ -229,6 +229,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Delete account.
+  Future<bool> deleteAccount() async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      // Delete user from Firebase Auth
+      await _auth.deleteAccount();
+      // Sign out to clear state
+      await _auth.signOut();
+      state = const AuthState();
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+          isLoading: false, error: 'Failed to delete account.');
+      return false;
+    }
+  }
+
   /// Clear error state.
   void clearError() {
     state = state.copyWith(error: null);

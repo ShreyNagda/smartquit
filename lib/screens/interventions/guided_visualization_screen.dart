@@ -189,10 +189,12 @@ class _GuidedVisualizationScreenState
 
   Widget _buildStart() {
     return Container(
+      width: double.infinity,
       color: AppColors.background,
       padding: const EdgeInsets.all(32),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text('🏔️', style: TextStyle(fontSize: 64)),
           const SizedBox(height: 24),
@@ -253,6 +255,7 @@ class _GuidedVisualizationScreenState
               padding: const EdgeInsets.all(32),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Timer
                   Text(
@@ -270,6 +273,7 @@ class _GuidedVisualizationScreenState
                     duration: const Duration(seconds: 1),
                     child: Column(
                       key: ValueKey(_currentScene),
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(scene.emoji, style: const TextStyle(fontSize: 72)),
                         const SizedBox(height: 24),
