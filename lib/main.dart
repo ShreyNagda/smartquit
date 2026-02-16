@@ -11,6 +11,7 @@ import 'services/widget_service.dart';
 
 // Screens
 import 'screens/splash_screen.dart';
+import 'screens/auth/features_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
@@ -98,6 +99,9 @@ class _BreatheFreeAppState extends ConsumerState<BreatheFreeApp> {
       case '/auth-gate':
         page = const _AuthGate();
         break;
+      case '/features':
+        page = const FeaturesScreen();
+        break;
       case '/login':
         page = const LoginScreen();
         break;
@@ -169,7 +173,7 @@ class _BreatheFreeAppState extends ConsumerState<BreatheFreeApp> {
   }
 }
 
-/// Auth gate — decides whether to show login or home.
+/// Auth gate — decides whether to show features or home.
 class _AuthGate extends ConsumerWidget {
   const _AuthGate();
 
@@ -182,13 +186,13 @@ class _AuthGate extends ConsumerWidget {
         if (user != null) {
           return const AppShell();
         }
-        return const LoginScreen();
+        return const FeaturesScreen();
       },
       loading: () => const Scaffold(
         backgroundColor: AppColors.background,
         body: Center(child: CircularProgressIndicator()),
       ),
-      error: (_, __) => const LoginScreen(),
+      error: (_, __) => const FeaturesScreen(),
     );
   }
 }

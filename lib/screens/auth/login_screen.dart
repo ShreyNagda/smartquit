@@ -41,7 +41,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         await ref.read(authNotifierProvider.notifier).signInWithGoogle();
 
     if (success && mounted) {
+      // Check if we need onboarding or go directly to home
       Navigator.of(context).pushReplacementNamed('/home');
+    } else if (mounted) {
+      // Error is already set in the provider state and will show in the UI
+      final error = ref.read(authNotifierProvider).error;
+      if (error != null && error.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 

@@ -54,6 +54,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (success && mounted) {
       // After Google sign-in, might want to go to onboarding for preferences
       Navigator.of(context).pushReplacementNamed('/onboarding');
+    } else if (mounted) {
+      // Error is already set in the provider state and will show in the UI
+      final error = ref.read(authNotifierProvider).error;
+      if (error != null && error.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 

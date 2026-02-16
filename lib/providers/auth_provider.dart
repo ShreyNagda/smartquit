@@ -147,32 +147,49 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       if (existingUser == null) {
         // First time Google sign-in - create user document
-        final supportCode = await _db.generateSupportCode();
+        try {
+          final supportCode = await _db.generateSupportCode();
 
-        final newUser = UserModel(
-          uid: user.uid,
-          displayName: user.displayName ?? 'User',
-          email: user.email ?? '',
-          supportCode: supportCode,
-          createdAt: DateTime.now(),
-          quitDate: DateTime.now(),
-          preferences: const UserPreferences(
-            cigarettesPerDay: 20,
-            pricePerCigarette: 0.50,
-          ),
-        );
+          final newUser = UserModel(
+            uid: user.uid,
+            displayName: user.displayName ?? 'User',
+            email: user.email ?? '',
+            photoUrl: user.photoURL,
+            supportCode: supportCode,
+            createdAt: DateTime.now(),
+            quitDate: DateTime.now(),
+            preferences: const UserPreferences(
+              cigarettesPerDay: 20,
+              pricePerCigarette: 0.50,
+            ),
+          );
 
-        await _db.createUser(newUser);
+          await _db.createUser(newUser);
+          print('✅ Firestore user document created for ${user.uid}');
+        } catch (e) {
+          print('❌ Error creating Firestore user document: $e');
+          // Sign out the user from Firebase Auth if Firestore creation fails
+          await _auth.signOut();
+          state = state.copyWith(
+            isLoading: false,
+            error: 'Failed to create user profile. Please try again.',
+          );
+          return false;
+        }
+      } else {
+        print('✅ Existing user found: ${existingUser.uid}');
       }
 
       state = state.copyWith(isLoading: false, user: user);
       return true;
     } on FirebaseAuthException catch (e) {
+      print('❌ FirebaseAuthException: ${e.code} - ${e.message}');
       state = state.copyWith(isLoading: false, error: e.message);
       return false;
     } catch (e) {
+      print('❌ Unexpected error in signInWithGoogle: $e');
       state = state.copyWith(
-          isLoading: false, error: 'An unexpected error occurred.');
+          isLoading: false, error: 'An unexpected error occurred: $e');
       return false;
     }
   }

@@ -1,1 +1,24 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"smoking-cessation-78e14","appId":"1:242383778526:android:b12c3db54f7bf2cd39c84f","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"smoking-cessation-78e14","configurations":{"android":"1:242383778526:android:b12c3db54f7bf2cd39c84f"}}}}}}
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "smoking-cessation-78e14",
+          "appId": "1:242383778526:android:b12c3db54f7bf2cd39c84f",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "smoking-cessation-78e14",
+          "configurations": {
+            "android": "1:242383778526:android:b12c3db54f7bf2cd39c84f"
+          }
+        }
+      }
+    }
+  }
+}
