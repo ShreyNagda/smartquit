@@ -91,7 +91,8 @@ class SavingsTrackerScreen extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.access_time, size: 36, color: AppColors.primary),
+                  const Icon(Icons.access_time,
+                      size: 36, color: AppColors.primary),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

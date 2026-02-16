@@ -28,18 +28,26 @@ class AuthState {
   final bool isLoading;
   final String? error;
   final User? user;
+  final bool isNewUser;
 
   const AuthState({
     this.isLoading = false,
     this.error,
     this.user,
+    this.isNewUser = false,
   });
 
-  AuthState copyWith({bool? isLoading, String? error, User? user}) {
+  AuthState copyWith({
+    bool? isLoading,
+    String? error,
+    User? user,
+    bool? isNewUser,
+  }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
       error: error,
       user: user ?? this.user,
+      isNewUser: isNewUser ?? this.isNewUser,
     );
   }
 }
@@ -129,7 +137,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Sign in with Google.
   Future<bool> signInWithGoogle() async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, error: null, isNewUser: false);
 
     try {
       final credential = await _auth.signInWithGoogle();
@@ -141,12 +149,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
 
       final user = credential.user!;
+      bool isNewUser = false;
 
       // Check if user document exists
       final existingUser = await _db.getUser(user.uid);
 
       if (existingUser == null) {
-        // First time Google sign-in - create user document
+        // First time Google sign-in - create user document with defaults
         try {
           final supportCode = await _db.generateSupportCode();
 
@@ -160,11 +169,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
             quitDate: DateTime.now(),
             preferences: const UserPreferences(
               cigarettesPerDay: 20,
-              pricePerCigarette: 0.50,
+              pricePerCigarette: 10.0,
+              currency: '₹',
             ),
           );
 
           await _db.createUser(newUser);
+          isNewUser = true;
           print('✅ Firestore user document created for ${user.uid}');
         } catch (e) {
           print('❌ Error creating Firestore user document: $e');
@@ -180,7 +191,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
         print('✅ Existing user found: ${existingUser.uid}');
       }
 
-      state = state.copyWith(isLoading: false, user: user);
+      state = state.copyWith(
+        isLoading: false,
+        user: user,
+        isNewUser: isNewUser,
+      );
       return true;
     } on FirebaseAuthException catch (e) {
       print('❌ FirebaseAuthException: ${e.code} - ${e.message}');
@@ -217,5 +232,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Clear error state.
   void clearError() {
     state = state.copyWith(error: null);
+  }
+
+  /// Clear new user flag after onboarding.
+  void clearNewUserFlag() {
+    state = state.copyWith(isNewUser: false);
   }
 }

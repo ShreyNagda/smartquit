@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/intervention_provider.dart';
 import '../../services/haptic_service.dart';
-import '../../providers/intervention_provider.dart';
 
 /// Memory Match: 4x4 nature-themed card flip game.
 class MemoryMatchScreen extends ConsumerStatefulWidget {
@@ -111,11 +110,11 @@ class _MemoryMatchScreenState extends ConsumerState<MemoryMatchScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.celebration, color: AppColors.primary),
-            const SizedBox(width: 8),
-            const Text('All Matched!'),
+            SizedBox(width: 8),
+            Text('All Matched!'),
           ],
         ),
         content: Text(

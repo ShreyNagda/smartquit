@@ -153,7 +153,7 @@ class _WhackACraveScreenState extends ConsumerState<WhackACraveScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.sports_esports, size: 64, color: AppColors.accent),
+          const Icon(Icons.sports_esports, size: 64, color: AppColors.accent),
           const SizedBox(height: 24),
           const Text(
             'Whack-a-Crave',

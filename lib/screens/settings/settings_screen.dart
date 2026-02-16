@@ -6,6 +6,7 @@ import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/intervention_provider.dart';
+import 'ble_logs_screen.dart';
 
 /// Settings screen with preferences, privacy, and account management.
 class SettingsScreen extends ConsumerWidget {
@@ -92,6 +93,22 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // BLE Logs
+              _sectionHeader('Device Data'),
+              const SizedBox(height: 8),
+              _infoTile(
+                icon: Icons.analytics_outlined,
+                title: 'Logs',
+                value: 'View BLE data',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BleLogsScreen(),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -457,7 +474,7 @@ class SettingsScreen extends ConsumerWidget {
 
   void _selectInterventions(
       BuildContext context, WidgetRef ref, UserModel user) {
-    final allInterventions = InterventionType.values;
+    const allInterventions = InterventionType.values;
     final selected = List<String>.from(user.preferences.selectedInterventions);
 
     showDialog(
@@ -531,7 +548,7 @@ class SettingsScreen extends ConsumerWidget {
                       activeColor: AppColors.primary,
                       dense: true,
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),

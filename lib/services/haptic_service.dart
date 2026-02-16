@@ -1,5 +1,6 @@
 import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/user_provider.dart';
 
 /// Centralized haptic feedback service.
 /// Respects user preferences and provides consistent haptic patterns.
@@ -10,8 +11,8 @@ class HapticService {
 
   /// Check if haptic feedback is enabled in user preferences
   bool get _isEnabled {
-    // TODO: Integrate with user preferences when userProvider is available
-    return true;
+    final user = _ref.read(userStreamProvider).valueOrNull;
+    return user?.preferences.hapticFeedback ?? true;
   }
 
   /// Light haptic - for subtle feedback (card flips, selections)
@@ -80,5 +81,5 @@ class HapticService {
 
 /// Provider for haptic service
 final hapticServiceProvider = Provider<HapticService>((ref) {
-  return HapticService(ref);
+  return HapticService();
 });

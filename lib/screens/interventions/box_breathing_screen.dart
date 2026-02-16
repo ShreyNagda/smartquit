@@ -111,11 +111,11 @@ class _BoxBreathingScreenState extends ConsumerState<BoxBreathingScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.check_circle, color: AppColors.primary),
-            const SizedBox(width: 8),
-            const Text('Well Done!'),
+            SizedBox(width: 8),
+            Text('Well Done!'),
           ],
         ),
         content: const Text(
@@ -162,7 +162,7 @@ class _BoxBreathingScreenState extends ConsumerState<BoxBreathingScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.air, size: 64, color: AppColors.primary),
+          const Icon(Icons.air, size: 64, color: AppColors.primary),
           const SizedBox(height: 24),
           const Text(
             'Box Breathing',

@@ -14,6 +14,7 @@ import 'screens/splash_screen.dart';
 import 'screens/auth/features_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
+import 'screens/onboarding/preferences_setup_screen.dart';
 import 'screens/onboarding/onboarding_screen.dart';
 import 'screens/journal/journal_screen.dart';
 import 'screens/journal/journal_entry_screen.dart';
@@ -107,6 +108,9 @@ class _BreatheFreeAppState extends ConsumerState<BreatheFreeApp> {
         break;
       case '/register':
         page = const RegisterScreen();
+        break;
+      case '/preferences-setup':
+        page = const PreferencesSetupScreen();
         break;
       case '/onboarding':
         page = const OnboardingScreen();

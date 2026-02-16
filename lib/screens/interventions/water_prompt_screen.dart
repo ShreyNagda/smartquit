@@ -76,11 +76,11 @@ class _WaterPromptScreenState extends ConsumerState<WaterPromptScreen>
         context: context,
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
-          title: Row(
+          title: const Row(
             children: [
               Icon(Icons.water_drop, color: AppColors.info),
-              const SizedBox(width: 8),
-              const Text('Hydrated!'),
+              SizedBox(width: 8),
+              Text('Hydrated!'),
             ],
           ),
           content: const Text(

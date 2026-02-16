@@ -153,7 +153,7 @@ class _UrgeSurfingScreenState extends ConsumerState<UrgeSurfingScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.waves, size: 64, color: AppColors.info),
+          const Icon(Icons.waves, size: 64, color: AppColors.info),
           const SizedBox(height: 24),
           const Text(
             'Urge Surfing',

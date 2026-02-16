@@ -18,6 +18,27 @@ class _JournalEntryScreenState extends ConsumerState<JournalEntryScreen> {
   int _intensity = 5;
   final _notesController = TextEditingController();
   bool _isSubmitting = false;
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Get route arguments and set initial event type
+    if (!_initialized) {
+      _initialized = true;
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args is Map<String, dynamic> && args['eventType'] != null) {
+        final eventTypeStr = args['eventType'] as String;
+        if (eventTypeStr == 'relapse') {
+          setState(() {
+            _eventType = JournalEventType.relapse;
+            _notesController.text = 'Smoking detected by SmartQuit Band';
+          });
+        }
+      }
+    }
+  }
 
   @override
   void dispose() {

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/intervention_provider.dart';
 import '../../services/haptic_service.dart';
-import '../../providers/intervention_provider.dart';
 
 /// Positive Reframing: CBT affirmation card-swipe deck.
 class PositiveReframingScreen extends ConsumerStatefulWidget {
@@ -109,11 +108,11 @@ class _PositiveReframingScreenState
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: Row(
+              title: const Row(
                 children: [
                   Icon(Icons.lightbulb, color: AppColors.primary),
-                  const SizedBox(width: 8),
-                  const Text('Mind Refreshed!'),
+                  SizedBox(width: 8),
+                  Text('Mind Refreshed!'),
                 ],
               ),
               content: const Text(

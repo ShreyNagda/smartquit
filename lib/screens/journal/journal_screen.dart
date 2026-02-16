@@ -57,7 +57,7 @@ class JournalScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.book, size: 64, color: AppColors.textLight),
+            const Icon(Icons.book, size: 64, color: AppColors.textLight),
             const SizedBox(height: 16),
             const Text(
               'Your journal is empty',

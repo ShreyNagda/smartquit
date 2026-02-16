@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/intervention_provider.dart';
 import '../../services/haptic_service.dart';
-import '../../providers/intervention_provider.dart';
 
 /// 5-4-3-2-1 Grounding: Interactive sensory input prompts.
 class GroundingScreen extends ConsumerStatefulWidget {
@@ -93,11 +92,11 @@ class _GroundingScreenState extends ConsumerState<GroundingScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.explore, color: AppColors.primary),
-            const SizedBox(width: 8),
-            const Text('Grounded!'),
+            SizedBox(width: 8),
+            Text('Grounded!'),
           ],
         ),
         content: const Text(

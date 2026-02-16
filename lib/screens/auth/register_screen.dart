@@ -52,8 +52,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         await ref.read(authNotifierProvider.notifier).signInWithGoogle();
 
     if (success && mounted) {
-      // After Google sign-in, might want to go to onboarding for preferences
-      Navigator.of(context).pushReplacementNamed('/onboarding');
+      // Check if this is a new user
+      final authState = ref.read(authNotifierProvider);
+      if (authState.isNewUser) {
+        // New user - go to preferences setup
+        Navigator.of(context).pushReplacementNamed('/preferences-setup');
+      } else {
+        // Existing user - go to home
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
     } else if (mounted) {
       // Error is already set in the provider state and will show in the UI
       final error = ref.read(authNotifierProvider).error;
@@ -240,8 +247,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _priceController,
-                        keyboardType:
-                            TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                         decoration: const InputDecoration(
                           labelText: 'Price/Cigarette (₹)',
                           prefixIcon: Icon(Icons.currency_rupee),
@@ -274,11 +281,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 16),
 
                 // Divider with "OR"
-                Row(
+                const Row(
                   children: [
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'OR',
                         style: TextStyle(
@@ -288,7 +295,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ),
                       ),
                     ),
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider()),
                   ],
                 ),
                 const SizedBox(height: 16),

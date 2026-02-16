@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
@@ -41,8 +43,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         await ref.read(authNotifierProvider.notifier).signInWithGoogle();
 
     if (success && mounted) {
-      // Check if we need onboarding or go directly to home
-      Navigator.of(context).pushReplacementNamed('/home');
+      // Check if this is a new user
+      final authState = ref.read(authNotifierProvider);
+      if (authState.isNewUser) {
+        // New user - go to preferences setup
+        Navigator.of(context).pushReplacementNamed('/preferences-setup');
+      } else {
+        // Existing user - go to home
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
     } else if (mounted) {
       // Error is already set in the provider state and will show in the UI
       final error = ref.read(authNotifierProvider).error;
@@ -194,11 +203,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 16),
 
                 // Divider with "OR"
-                Row(
+                const Row(
                   children: [
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'OR',
                         style: TextStyle(
@@ -208,7 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                     ),
-                    const Expanded(child: Divider()),
+                    Expanded(child: Divider()),
                   ],
                 ),
                 const SizedBox(height: 16),
