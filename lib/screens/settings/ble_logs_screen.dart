@@ -2,7 +2,9 @@ import 'package:breathe_free/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import 'package:intl/intl.dart';
 import '../../services/ble_logs_service.dart';
 import '../../models/ble_log_entry.dart';
@@ -132,25 +134,35 @@ class _BleLogsScreenState extends State<BleLogsScreen> {
         );
       }
 
-      // Show print/share dialog
-      await Printing.layoutPdf(
-        onLayout: (format) async => pdf.save(),
-        name:
-            'SmartQuit_BLE_Logs_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.pdf',
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error generating PDF: $e'),
-            backgroundColor: AppColors.error,
-          ),
+      // Save PDF to temporary directory and share
+      try {
+        final bytes = await pdf.save();
+        final dir = await getTemporaryDirectory();
+        final fileName = 'SmartQuit_BLE_Logs_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.pdf';
+        final file = File('${dir.path}/$fileName');
+        await file.writeAsBytes(bytes);
+
+        // Share the PDF file
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: 'SmartQuit BLE Logs Export',
+          subject: fileName,
         );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error sharing PDF: $e'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
       }
-    } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
+    }catch(e){
+      print('Error generating PDF: $e');
     }
   }
 
