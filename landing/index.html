@@ -17,6 +17,11 @@
     />
     <link rel="stylesheet" href="styles.css" />
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   </head>
   <body>
     <!-- Hero Section -->
@@ -28,7 +33,10 @@
         Band wearable with BreatheFree companion app — powered by multimodal AI
         analysis
       </p>
-      <a href="#learn-more" class="cta-primary">Explore the Research</a>
+      <div class="cta-buttons">
+        <a href="#learn-more" class="cta-primary">Explore the Research</a>
+        <a href="analytics.html" class="cta-secondary">Analytics</a>
+      </div>
     </section>
 
     <!-- Problem Section -->
@@ -211,49 +219,53 @@
 
         <div class="component-grid">
           <div class="component-card">
-            <div class="component-emoji">🔌</div>
+            <div class="component-icon"><i data-lucide="power"></i></div>
             <h4>ESP32 Controller</h4>
             <p>Dual-core processor with BLE for low-power wearable operation</p>
           </div>
 
           <div class="component-card">
-            <div class="component-emoji">💨</div>
+            <div class="component-icon"><i data-lucide="wind"></i></div>
             <h4>MQ9 Gas Sensor</h4>
             <p>Detects CO and combustible gases from cigarette smoke</p>
           </div>
 
           <div class="component-card">
-            <div class="component-emoji">📐</div>
+            <div class="component-icon"><i data-lucide="move-3d"></i></div>
             <h4>MPU6050 IMU</h4>
             <p>6-axis motion tracking for gesture pattern recognition</p>
           </div>
 
           <div class="component-card">
-            <div class="component-emoji">🤖</div>
+            <div class="component-icon">
+              <i data-lucide="brain-circuit"></i>
+            </div>
             <h4>ML Model</h4>
             <p>Edge Impulse-trained neural network running on ESP32</p>
           </div>
 
           <div class="component-card">
-            <div class="component-emoji">🆘</div>
+            <div class="component-icon">
+              <i data-lucide="alert-triangle"></i>
+            </div>
             <h4>Panic Button</h4>
             <p>Instant intervention access in BreatheFree app</p>
           </div>
 
           <div class="component-card">
-            <div class="component-emoji">🧘</div>
+            <div class="component-icon"><i data-lucide="heart"></i></div>
             <h4>10 Interventions</h4>
             <p>Breathing, games, mindfulness, sketching techniques</p>
           </div>
 
           <div class="component-card">
-            <div class="component-emoji">📊</div>
+            <div class="component-icon"><i data-lucide="bar-chart-3"></i></div>
             <h4>Analytics Dashboard</h4>
             <p>Multi-user access for patients, families, consultants</p>
           </div>
 
           <div class="component-card">
-            <div class="component-emoji">🔒</div>
+            <div class="component-icon"><i data-lucide="shield-check"></i></div>
             <h4>Privacy-First Design</h4>
             <p>Local SQLite storage, encrypted BLE, consent-based sharing</p>
           </div>
@@ -312,5 +324,6 @@
       // Initialize Lucide icons
       lucide.createIcons();
     </script>
+    <script type="module" src="analytics.js"></script>
   </body>
 </html>

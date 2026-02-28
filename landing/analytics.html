@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="assets/favicon.ico" />
     <meta
       name="description"
-      content="SmartQuit Analytics - Real-time insights into user engagement and smoking cessation progress across the ecosystem."
+      content="SmartQuit Analytics Dashboard - Real-time insights into smoking cessation program data"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,1084 +15,727 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="analytics.css" />
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <link rel="stylesheet" href="analytics.css" />
   </head>
   <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-      <div class="container">
-        <a href="index.html" class="navbar-brand">
-          <img src="assets/logo.png" alt="SmartQuit Logo" />
-          <h1>SmartQuit Analytics</h1>
+    <div class="dashboard-container">
+      <div class="header">
+        <a href="index.html" class="back-button">
+          <i data-lucide="chevron-left"></i>
         </a>
-        <div class="navbar-nav">
-          <a href="index.html">Home</a>
-          <a href="#overview">Overview</a>
-          <a href="#engagement">Engagement</a>
-          <a href="#insights">Insights</a>
+        <h1>SmartQuit Analytics</h1>
+        <p>Real-time insights into your smoking cessation program</p>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="stat-card">
+          <div class="stat-icon users">
+            <i data-lucide="users"></i>
+          </div>
+          <div class="stat-value" id="totalUsers">-</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon entries">
+            <i data-lucide="book-open"></i>
+          </div>
+          <div class="stat-value" id="totalEntries">-</div>
+          <div class="stat-label">Journal Entries</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon average">
+            <i data-lucide="trending-up"></i>
+          </div>
+          <div class="stat-value" id="avgEntries">-</div>
+          <div class="stat-label">Avg. Entries per User</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon success">
+            <i data-lucide="award"></i>
+          </div>
+          <div class="stat-value" id="milestoneCount">-</div>
+          <div class="stat-label">Milestones Achieved</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon streak">
+            <i data-lucide="calendar-check"></i>
+          </div>
+          <div class="stat-value" id="activeUsers">-</div>
+          <div class="stat-label">Active Users (7 days)</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon recent">
+            <i data-lucide="clock"></i>
+          </div>
+          <div class="stat-value" id="recentActivity">-</div>
+          <div class="stat-label">Recent Activities (24h)</div>
         </div>
       </div>
-    </nav>
 
-    <!-- Dashboard Header -->
-    <section class="dashboard-header">
-      <div class="container">
-        <h1>SmartQuit Analytics Dashboard</h1>
-        <p>
-          Real-time insights into user engagement, smoking cessation progress,
-          and system performance across the SmartQuit ecosystem
-        </p>
+      <div class="chart-section">
+        <div class="chart-card">
+          <h3 class="chart-title">Journal Entry Types Distribution</h3>
+          <div class="chart-container">
+            <canvas id="journalChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Interventions Used by Users</h3>
+          <div class="chart-container">
+            <canvas id="interventionChart"></canvas>
+          </div>
+        </div>
       </div>
-    </section>
-
-    <!-- Dashboard Content -->
-    <section class="dashboard-content">
-      <div class="container">
-        <!-- Key Metrics -->
-        <section id="overview">
-          <div class="stats-grid">
-            <div class="stat-card success">
-              <div class="stat-header">
-                <div>
-                  <div class="stat-value" id="active-users">2,847</div>
-                  <div class="stat-label">Active Users</div>
-                  <div class="stat-change positive">
-                    <i
-                      data-lucide="trending-up"
-                      style="width: 12px; height: 12px"
-                    ></i>
-                    +18.2% vs last month
-                  </div>
-                </div>
-                <div class="stat-icon">
-                  <i data-lucide="users" style="width: 24px; height: 24px"></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card warning">
-              <div class="stat-header">
-                <div>
-                  <div class="stat-value" id="avg-streak">27.3</div>
-                  <div class="stat-label">Avg No-Smoking Streak (days)</div>
-                  <div class="stat-change positive">
-                    <i
-                      data-lucide="trending-up"
-                      style="width: 12px; height: 12px"
-                    ></i>
-                    +12.4% vs last month
-                  </div>
-                </div>
-                <div class="stat-icon">
-                  <i
-                    data-lucide="calendar-check"
-                    style="width: 24px; height: 24px"
-                  ></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card info">
-              <div class="stat-header">
-                <div>
-                  <div class="stat-value" id="journal-entries">15,432</div>
-                  <div class="stat-label">Total Journal Entries</div>
-                  <div class="stat-change positive">
-                    <i
-                      data-lucide="trending-up"
-                      style="width: 12px; height: 12px"
-                    ></i>
-                    +24.7% vs last month
-                  </div>
-                </div>
-                <div class="stat-icon">
-                  <i
-                    data-lucide="book-open"
-                    style="width: 24px; height: 24px"
-                  ></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-header">
-                <div>
-                  <div class="stat-value" id="interventions-completed">
-                    8,921
-                  </div>
-                  <div class="stat-label">Interventions Completed</div>
-                  <div class="stat-change positive">
-                    <i
-                      data-lucide="trending-up"
-                      style="width: 12px; height: 12px"
-                    ></i>
-                    +31.8% vs last month
-                  </div>
-                </div>
-                <div class="stat-icon">
-                  <i
-                    data-lucide="heart-handshake"
-                    style="width: 24px; height: 24px"
-                  ></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Charts Section -->
-        <section id="engagement">
-          <div class="chart-grid">
-            <!-- User Growth Chart -->
-            <div class="chart-card">
-              <h3>
-                <i
-                  data-lucide="trending-up"
-                  style="width: 20px; height: 20px"
-                ></i>
-                User Growth Over Time
-              </h3>
-              <div class="time-filter">
-                <button
-                  class="filter-btn active"
-                  onclick="updateGrowthChart('7d')"
-                >
-                  7D
-                </button>
-                <button class="filter-btn" onclick="updateGrowthChart('30d')">
-                  30D
-                </button>
-                <button class="filter-btn" onclick="updateGrowthChart('90d')">
-                  90D
-                </button>
-                <button class="filter-btn" onclick="updateGrowthChart('1y')">
-                  1Y
-                </button>
-              </div>
-              <div class="chart-container">
-                <canvas id="growthChart"></canvas>
-              </div>
-            </div>
-
-            <!-- Journal Entries Distribution -->
-            <div class="chart-card">
-              <h3>
-                <i
-                  data-lucide="pie-chart"
-                  style="width: 20px; height: 20px"
-                ></i>
-                Journal Entry Types
-              </h3>
-              <div class="chart-container small">
-                <canvas id="journalChart"></canvas>
-              </div>
-              <div style="margin-top: 16px">
-                <div class="legend-item">
-                  <div class="legend-color" style="background: #5b7553"></div>
-                  <span>Cravings (34%)</span>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-color" style="background: #e07a5f"></div>
-                  <span>Triggers (28%)</span>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-color" style="background: #d4a574"></div>
-                  <span>Milestones (22%)</span>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-color" style="background: #8faf85"></div>
-                  <span>Reflections (16%)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Additional Insights -->
-        <section id="insights">
-          <div class="chart-grid">
-            <!-- Intervention Effectiveness -->
-            <div class="chart-card">
-              <h3>
-                <i data-lucide="activity" style="width: 20px; height: 20px"></i>
-                Intervention Effectiveness
-              </h3>
-              <div class="chart-container">
-                <canvas id="interventionChart"></canvas>
-              </div>
-            </div>
-
-            <!-- Daily Active Users -->
-            <div class="chart-card">
-              <h3>
-                <i
-                  data-lucide="users-round"
-                  style="width: 20px; height: 20px"
-                ></i>
-                Daily Active Users
-              </h3>
-              <div class="chart-container small">
-                <canvas id="dauChart"></canvas>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </section>
+    </div>
 
     <script>
-      /**
-       * SmartQuit Analytics Dashboard
-       *
-       * Privacy-Focused Analytics:
-       * - Only aggregated, non-personal data is accessed
-       * - Personal information (names, emails, phone numbers) is excluded
-       * - Uses Firestore select() to fetch only necessary fields
-       * - All queries respect user privacy while providing valuable insights
-       *
-       * Data Categories Accessed:
-       * ✅ User counts, quit dates (for streak calculation)
-       * ✅ Journal entry types and timestamps
-       * ✅ Intervention completion rates
-       * ✅ App usage patterns and engagement metrics
-       * ❌ Names, emails, personal messages, private settings
-       */
-
-      // Firebase Configuration
+      // Firebase Configuration and Analytics Functions
       const firebaseConfig = {
-        apiKey: "your-api-key", // Get from Firebase Console
+        apiKey: "AIzaSyAvQqSH9sUyHqC19W0eXyjGFqDgAowFztM",
         authDomain: "smoking-cessation-78e14.firebaseapp.com",
         projectId: "smoking-cessation-78e14",
-        storageBucket: "smoking-cessation-78e14.appspot.com",
+        storageBucket: "smoking-cessation-78e14.firebasestorage.app",
         messagingSenderId: "242383778526",
-        appId: "your-web-app-id", // Get from Firebase Console after adding web app
+        appId: "1:242383778526:web:680c935f209e016b39c84f",
       };
 
-      // Initialize Firebase
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
+
+      // Global chart instance variables
+      let journalChartInstance = null;
+      let interventionChartInstance = null;
+
+      // Function to fetch total users and their profile creation dates
+      async function getUsersData() {
+        try {
+          const usersSnapshot = await db.collection("users").get();
+          console.log("Fetched users:", usersSnapshot.size);
+
+          const users = [];
+          const profileCreationDates = [];
+
+          usersSnapshot.forEach((doc) => {
+            const userData = doc.data();
+            users.push({
+              id: doc.id,
+              ...userData,
+            });
+
+            // Extract profile creation date
+            if (userData.createdAt) {
+              const createdAt = userData.createdAt.toDate
+                ? userData.createdAt.toDate()
+                : new Date(userData.createdAt);
+              profileCreationDates.push(createdAt);
+            }
+          });
+
+          return {
+            totalUsers: users.length,
+            users: users,
+            profileCreationDates: profileCreationDates,
+          };
+        } catch (error) {
+          console.error("Error fetching users:", error);
+          return { totalUsers: 0, users: [], profileCreationDates: [] };
+        }
+      }
+
+      // Function to fetch all intervention data from users
+      async function getAllInterventions() {
+        try {
+          const interventions = [];
+
+          // Get all users first
+          const usersSnapshot = await db.collection("users").get();
+
+          usersSnapshot.forEach((userDoc) => {
+            const userData = userDoc.data();
+
+            // Debug: Log user data to see structure
+            console.log(`User ${userDoc.id} data keys:`, Object.keys(userData));
+
+            // Check the stats field specifically since it's present in the data
+            if (userData.stats) {
+              console.log(`User ${userDoc.id} stats data:`, userData.stats);
+              console.log(
+                `User ${userDoc.id} stats keys:`,
+                Object.keys(userData.stats),
+              );
+            }
+
+            // Check for various possible intervention field names, including stats
+            const possibleInterventionFields = [
+              "stats", // Adding stats as the first option since it's in the data
+              "intervention_breakdown",
+              "interventions",
+              "interventionBreakdown",
+              "intervention_data",
+              "interventionData",
+              "intervention_logs",
+              "interventionLogs",
+              "intervention_usage",
+              "interventionUsage",
+              "used_interventions",
+              "usedInterventions",
+            ];
+
+            let interventionData = null;
+            let foundField = null;
+
+            // Find which field contains intervention data
+            for (const field of possibleInterventionFields) {
+              if (userData[field]) {
+                if (field === "stats") {
+                  // If it's stats, look for intervention-related data inside it
+                  const statsData = userData[field];
+                  const possibleStatsFields = ["intervention_breakdown"];
+
+                  for (const statsField of possibleStatsFields) {
+                    if (statsData[statsField]) {
+                      interventionData = statsData[statsField];
+                      foundField = `stats.${statsField}`;
+                      console.log(
+                        `Found intervention data in field '${foundField}' for user ${userDoc.id}:`,
+                        interventionData,
+                      );
+                      break;
+                    }
+                  }
+
+                  // If no specific intervention field found in stats, check if stats itself contains intervention data
+                  if (!interventionData && Object.keys(statsData).length > 0) {
+                    console.log(
+                      `Checking if stats contains intervention data directly for user ${userDoc.id}`,
+                    );
+                    // Look for intervention-like keys in stats
+                    const interventionLikeKeys = Object.keys(statsData).filter(
+                      (key) =>
+                        key.toLowerCase().includes("intervention") ||
+                        key.toLowerCase().includes("breathing") ||
+                        key.toLowerCase().includes("meditation") ||
+                        key.toLowerCase().includes("exercise") ||
+                        key.toLowerCase().includes("therapy"),
+                    );
+
+                    if (interventionLikeKeys.length > 0) {
+                      interventionData = {};
+                      interventionLikeKeys.forEach((key) => {
+                        interventionData[key] = statsData[key];
+                      });
+                      foundField = "stats (intervention keys)";
+                      console.log(
+                        `Found intervention-like data in stats for user ${userDoc.id}:`,
+                        interventionData,
+                      );
+                    }
+                  }
+
+                  if (interventionData) break;
+                } else {
+                  interventionData = userData[field];
+                  foundField = field;
+                  console.log(
+                    `Found intervention data in field '${field}' for user ${userDoc.id}:`,
+                    interventionData,
+                  );
+                  break;
+                }
+              }
+            }
+
+            if (interventionData) {
+              // If intervention data is an array
+              if (Array.isArray(interventionData)) {
+                interventionData.forEach((intervention, index) => {
+                  interventions.push({
+                    id: `${userDoc.id}_${index}`,
+                    userId: userDoc.id,
+                    ...intervention,
+                  });
+                });
+              }
+              // If intervention data is an object with intervention types as keys
+              else if (typeof interventionData === "object") {
+                Object.entries(interventionData).forEach(([type, data]) => {
+                  interventions.push({
+                    id: `${userDoc.id}_${type}`,
+                    userId: userDoc.id,
+                    intervention_type: type,
+                    count: typeof data === "number" ? data : 1,
+                    ...data,
+                  });
+                });
+              }
+              // If intervention data is a simple value
+              else {
+                interventions.push({
+                  id: `${userDoc.id}_${foundField}`,
+                  userId: userDoc.id,
+                  intervention_type: interventionData,
+                  count: 1,
+                });
+              }
+            } else {
+              console.log(`No intervention data found for user ${userDoc.id}`);
+            }
+          });
+
+          console.log(
+            "Fetched interventions from user intervention_breakdown:",
+            interventions.length,
+            interventions,
+          );
+          return interventions;
+        } catch (error) {
+          console.error("Error fetching interventions from user data:", error);
+          return [];
+        }
+      }
+
+      // Function to get intervention breakdown by type
+      async function getInterventionBreakdown() {
+        try {
+          const interventions = await getAllInterventions();
+          const counts = {};
+
+          interventions.forEach((intervention) => {
+            const type =
+              intervention.intervention_type || intervention.type || "Unknown";
+            const count = intervention.count || 1;
+            counts[type] = (counts[type] || 0) + count;
+          });
+
+          console.log("Intervention counts:", counts);
+
+          return {
+            counts: counts,
+            totalInterventions: interventions.length,
+            interventions: interventions,
+          };
+        } catch (error) {
+          console.error("Error getting intervention breakdown:", error);
+          return {
+            counts: {},
+            totalInterventions: 0,
+            interventions: [],
+          };
+        }
+      }
+      async function getAllJournalEntries() {
+        try {
+          const journalEntries = [];
+
+          // Get all users first
+          const usersSnapshot = await db.collection("users").get();
+
+          // For each user, get their journal entries
+          const promises = [];
+          usersSnapshot.forEach((userDoc) => {
+            const promise = db
+              .collection("users")
+              .doc(userDoc.id)
+              .collection("journal")
+              .get()
+              .then((journalSnapshot) => {
+                journalSnapshot.forEach((journalDoc) => {
+                  journalEntries.push({
+                    id: journalDoc.id,
+                    userId: userDoc.id,
+                    ...journalDoc.data(),
+                  });
+                });
+              });
+            promises.push(promise);
+          });
+
+          await Promise.all(promises);
+          console.log("Fetched journal entries:", journalEntries.length);
+
+          return journalEntries;
+        } catch (error) {
+          console.error("Error fetching journal entries:", error);
+          return [];
+        }
+      }
+
+      // Function to get journal breakdown by type
+      async function getJournalBreakdown() {
+        try {
+          const journalEntries = await getAllJournalEntries();
+          const counts = {
+            craving: 0,
+            relapse: 0,
+            near_miss: 0,
+            milestone: 0,
+          };
+
+          journalEntries.forEach((entry) => {
+            const type =
+              entry.event_type?.toLowerCase() || entry.type?.toLowerCase();
+            if (counts.hasOwnProperty(type)) {
+              counts[type]++;
+            }
+          });
+
+          return {
+            counts: counts,
+            totalEntries: journalEntries.length,
+            entries: journalEntries,
+          };
+        } catch (error) {
+          console.error("Error getting journal breakdown:", error);
+          return {
+            counts: {
+              craving: 0,
+              relapse: 0,
+              near_miss: 0,
+              milestone: 0,
+            },
+            totalEntries: 0,
+            entries: [],
+          };
+        }
+      }
+
+      // Function to get analytics summary
+      async function getAnalyticsSummary() {
+        try {
+          const [usersData, journalData] = await Promise.all([
+            getUsersData(),
+            getJournalBreakdown(),
+          ]);
+
+          // Calculate additional metrics
+          const now = new Date();
+          const sevenDaysAgo = new Date(
+            now.getTime() - 7 * 24 * 60 * 60 * 1000,
+          );
+          const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+          // Active users (users with entries in last 7 days)
+          const activeUsers = journalData.entries
+            .filter((entry) => {
+              const entryDate = entry.createdAt
+                ? entry.createdAt.toDate
+                  ? entry.createdAt.toDate()
+                  : new Date(entry.createdAt)
+                : new Date();
+              return entryDate >= sevenDaysAgo;
+            })
+            .reduce((acc, entry) => {
+              acc.add(entry.userId);
+              return acc;
+            }, new Set()).size;
+
+          // Recent activity count (entries in last 24 hours)
+          const recentActivity = journalData.entries.filter((entry) => {
+            const entryDate = entry.createdAt
+              ? entry.createdAt.toDate
+                ? entry.createdAt.toDate()
+                : new Date(entry.createdAt)
+              : new Date();
+            return entryDate >= oneDayAgo;
+          }).length;
+
+          // Milestone count
+          const milestoneCount = journalData.counts.milestone;
+
+          return {
+            users: usersData,
+            journal: journalData,
+            summary: {
+              totalUsers: usersData.totalUsers,
+              totalJournalEntries: journalData.totalEntries,
+              averageEntriesPerUser:
+                usersData.totalUsers > 0
+                  ? (journalData.totalEntries / usersData.totalUsers).toFixed(2)
+                  : 0,
+              milestoneCount: milestoneCount,
+              activeUsers: activeUsers,
+              recentActivity: recentActivity,
+            },
+          };
+        } catch (error) {
+          console.error("Error getting analytics summary:", error);
+          return null;
+        }
+      }
+
+      // Function to update dashboard with real data
+      async function updateDashboard() {
+        try {
+          const analytics = await getAnalyticsSummary();
+
+          if (analytics) {
+            // Update user stats
+            const totalUsersElement = document.getElementById("totalUsers");
+            if (totalUsersElement) {
+              totalUsersElement.textContent = analytics.summary.totalUsers;
+            }
+
+            // Update journal stats
+            const totalEntriesElement = document.getElementById("totalEntries");
+            if (totalEntriesElement) {
+              totalEntriesElement.textContent =
+                analytics.summary.totalJournalEntries;
+            }
+
+            // Update average entries
+            const avgEntriesElement = document.getElementById("avgEntries");
+            if (avgEntriesElement) {
+              avgEntriesElement.textContent =
+                analytics.summary.averageEntriesPerUser;
+            }
+
+            // Update milestone count
+            const milestoneElement = document.getElementById("milestoneCount");
+            if (milestoneElement) {
+              milestoneElement.textContent = analytics.summary.milestoneCount;
+            }
+
+            // Update active users
+            const activeUsersElement = document.getElementById("activeUsers");
+            if (activeUsersElement) {
+              activeUsersElement.textContent = analytics.summary.activeUsers;
+            }
+
+            // Update recent activity
+            const recentActivityElement =
+              document.getElementById("recentActivity");
+            if (recentActivityElement) {
+              recentActivityElement.textContent =
+                analytics.summary.recentActivity;
+            }
+
+            console.log("Dashboard updated with real data:", analytics.summary);
+          }
+        } catch (error) {
+          console.error("Error updating dashboard:", error);
+        }
+      }
+
+      async function renderCharts() {
+        const data = await getJournalBreakdown();
+        const ctx = document.getElementById("journalChart");
+
+        if (ctx) {
+          // Destroy existing chart if it exists
+          if (journalChartInstance) {
+            journalChartInstance.destroy();
+            journalChartInstance = null;
+          }
+
+          journalChartInstance = new Chart(ctx.getContext("2d"), {
+            type: "doughnut",
+            data: {
+              labels: ["Cravings", "Relapses", "Near Miss", "Milestones"],
+              datasets: [
+                {
+                  data: [
+                    data.counts.craving,
+                    data.counts.relapse,
+                    data.counts.near_miss,
+                    data.counts.milestone,
+                  ],
+                  backgroundColor: ["#e07a5f", "#dc3545", "#ffc107", "#5b7553"],
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: {
+                    padding: 20,
+                    font: {
+                      size: 12,
+                    },
+                  },
+                },
+                title: {
+                  display: true,
+                  text: `Journal Entries Breakdown (Total: ${data.totalEntries})`,
+                  font: {
+                    size: 16,
+                  },
+                },
+              },
+              interaction: {
+                intersect: false,
+              },
+            },
+          });
+        }
+      }
+
+      async function renderInterventionChart() {
+        const data = await getInterventionBreakdown();
+        const ctx = document.getElementById("interventionChart");
+
+        if (ctx && Object.keys(data.counts).length > 0) {
+          // Destroy existing chart if it exists
+          if (interventionChartInstance) {
+            interventionChartInstance.destroy();
+            interventionChartInstance = null;
+          }
+
+          const labels = Object.keys(data.counts);
+          const values = Object.values(data.counts);
+          const colors = [
+            "#5b7553",
+            "#e07a5f",
+            "#d4a574",
+            "#8faf85",
+            "#6f42c1",
+            "#20c997",
+            "#fd7e14",
+            "#dc3545",
+            "#6610f2",
+            "#0dcaf0",
+          ];
+
+          interventionChartInstance = new Chart(ctx.getContext("2d"), {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Usage Count",
+                  data: values,
+                  backgroundColor: colors.slice(0, labels.length),
+                  borderColor: colors
+                    .slice(0, labels.length)
+                    .map((color) => color + "80"),
+                  borderWidth: 2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false,
+                },
+                title: {
+                  display: true,
+                  text: `Total Interventions Used: ${data.totalInterventions}`,
+                  font: {
+                    size: 16,
+                  },
+                },
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1,
+                    font: {
+                      size: 12,
+                    },
+                  },
+                  grid: {
+                    display: true,
+                    color: "rgba(0,0,0,0.1)",
+                  },
+                },
+                x: {
+                  ticks: {
+                    maxRotation: 45,
+                    minRotation: 0,
+                    font: {
+                      size: 12,
+                    },
+                  },
+                  grid: {
+                    display: false,
+                  },
+                },
+              },
+              interaction: {
+                intersect: false,
+                mode: "index",
+              },
+            },
+          });
+        } else if (ctx) {
+          // Show message if no intervention data
+          ctx.getContext("2d").font = "16px Montserrat";
+          ctx.getContext("2d").fillStyle = "#6b6b6b";
+          ctx.getContext("2d").textAlign = "center";
+          ctx
+            .getContext("2d")
+            .fillText(
+              "No intervention data available",
+              ctx.width / 2,
+              ctx.height / 2,
+            );
+        }
+      }
+      async function initializeDashboard() {
+        console.log("Initializing analytics dashboard...");
+        await updateDashboard();
+        await renderCharts();
+        await renderInterventionChart();
+        console.log("Dashboard initialization complete.");
+      }
 
       // Initialize Lucide icons
       lucide.createIcons();
 
-      // Chart.js default configuration
-      Chart.defaults.font.family = "Montserrat";
-      Chart.defaults.font.size = 12;
-      Chart.defaults.color = "#6b6b6b";
+      // Enhanced initialization to handle loading states
+      document.addEventListener("DOMContentLoaded", async function () {
+        // Set loading states for all stats
+        const statElements = [
+          "totalUsers",
+          "totalEntries",
+          "avgEntries",
+          "milestoneCount",
+          "activeUsers",
+          "recentActivity",
+        ];
 
-      // Global chart variables
-      let growthChart, journalChart;
-
-      // Firebase Data Fetchers with improved error handling
-      async function fetchActiveUsers() {
-        try {
-          // Get only necessary fields for analytics (not personal data)
-          const usersSnapshot = await db
-            .collection("users")
-            .select("createdAt", "quitDate", "lastActiveDate")
-            .get();
-
-          // Count active users (those active in last 30 days)
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-          let activeCount = 0;
-          usersSnapshot.forEach((doc) => {
-            const userData = doc.data();
-            if (
-              userData.lastActiveDate &&
-              userData.lastActiveDate.toDate() > thirtyDaysAgo
-            ) {
-              activeCount++;
-            } else if (
-              !userData.lastActiveDate &&
-              userData.createdAt &&
-              userData.createdAt.toDate() > thirtyDaysAgo
-            ) {
-              // Fallback: consider recently created users as active
-              activeCount++;
-            }
-          });
-
-          return activeCount || usersSnapshot.size;
-        } catch (error) {
-          console.error("Error fetching users:", error);
-          return 2847; // fallback
-        }
-      }
-
-      async function fetchAverageStreak() {
-        try {
-          // Get quit dates without personal information
-          const usersSnapshot = await db
-            .collection("users")
-            .select("quitDate")
-            .where("quitDate", "!=", null)
-            .get();
-
-          let totalStreak = 0;
-          let userCount = 0;
-
-          usersSnapshot.forEach((doc) => {
-            const userData = doc.data();
-            if (userData.quitDate) {
-              const quitDate = userData.quitDate.toDate();
-              const daysSinceQuit = Math.floor(
-                (new Date() - quitDate) / (1000 * 60 * 60 * 24),
-              );
-              if (daysSinceQuit >= 0) {
-                totalStreak += daysSinceQuit;
-                userCount++;
-              }
-            }
-          });
-
-          return userCount > 0 ? (totalStreak / userCount).toFixed(1) : 27.3;
-        } catch (error) {
-          console.error("Error fetching streak data:", error);
-          return 27.3; // fallback
-        }
-      }
-
-      async function fetchJournalEntries() {
-        try {
-          // Get journal entries with only analytics-relevant fields
-          const entriesSnapshot = await db
-            .collection("journal_entries")
-            .select("event_type", "createdAt", "mood_rating")
-            .get();
-
-          const totalEntries = entriesSnapshot.size;
-
-          // Count by event_type for analytics
-          const eventTypes = {
-            cravings: 0,
-            triggers: 0,
-            milestones: 0,
-            reflections: 0,
-          };
-
-          entriesSnapshot.forEach((doc) => {
-            const data = doc.data();
-            const eventType = data.event_type?.toLowerCase() || "reflections";
-            if (eventTypes.hasOwnProperty(eventType)) {
-              eventTypes[eventType]++;
-            } else {
-              eventTypes.reflections++; // default category
-            }
-          });
-
-          return { total: totalEntries, breakdown: eventTypes };
-        } catch (error) {
-          console.error("Error fetching journal entries:", error);
-          return {
-            total: 15432,
-            breakdown: {
-              cravings: 5247,
-              triggers: 4321,
-              milestones: 3395,
-              reflections: 2469,
-            },
-          };
-        }
-      }
-
-      async function fetchInterventionsCompleted() {
-        try {
-          // Get intervention completion data for analytics
-          const interventionsSnapshot = await db
-            .collection("intervention_logs")
-            .select("completed", "intervention_type", "createdAt")
-            .get();
-
-          return interventionsSnapshot.size;
-        } catch (error) {
-          console.error("Error fetching interventions:", error);
-          return 8921; // fallback
-        }
-      }
-
-      async function fetchUserGrowthData() {
-        try {
-          // Get only creation timestamps for growth analytics (no personal data)
-          const usersSnapshot = await db
-            .collection("users")
-            .select("createdAt")
-            .orderBy("createdAt", "asc")
-            .get();
-
-          const monthlyData = {};
-          usersSnapshot.forEach((doc) => {
-            const userData = doc.data();
-            if (userData.createdAt) {
-              const date = userData.createdAt.toDate();
-              const month = date.toLocaleString("default", { month: "short" });
-              monthlyData[month] = (monthlyData[month] || 0) + 1;
-            }
-          });
-
-          const labels = [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-          ];
-          let cumulative = 0;
-          const data = labels.map((month) => {
-            cumulative += monthlyData[month] || 0;
-            return cumulative;
-          });
-
-          return { labels, data };
-        } catch (error) {
-          console.error("Error fetching growth data:", error);
-          return {
-            labels: [
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ],
-            data: [
-              324, 456, 623, 891, 1245, 1678, 2034, 2398, 2547, 2672, 2734,
-              2847,
-            ],
-          };
-        }
-      }
-
-      async function fetchInterventionEffectiveness() {
-        try {
-          // Get intervention data for effectiveness analysis
-          const interventionsSnapshot = await db
-            .collection("intervention_logs")
-            .select("intervention_type", "completed", "createdAt")
-            .get();
-
-          const interventionStats = {};
-
-          interventionsSnapshot.forEach((doc) => {
-            const data = doc.data();
-            const type = data.intervention_type;
-            const completed = data.completed || false;
-
-            if (!interventionStats[type]) {
-              interventionStats[type] = { total: 0, completed: 0 };
-            }
-
-            interventionStats[type].total++;
-            if (completed) {
-              interventionStats[type].completed++;
-            }
-          });
-
-          const labels = Object.keys(interventionStats);
-          const data = labels.map((type) => {
-            const stats = interventionStats[type];
-            return Math.round((stats.completed / stats.total) * 100);
-          });
-
-          return { labels, data };
-        } catch (error) {
-          console.error("Error fetching intervention effectiveness:", error);
-          return {
-            labels: [
-              "Box Breathing",
-              "Urge Surfing",
-              "Guided Visualization",
-              "Quick Sketch",
-              "Memory Match",
-              "Grounding",
-              "Water Reminder",
-            ],
-            data: [87, 82, 79, 76, 74, 73, 68],
-          };
-        }
-      }
-
-      // Update dashboard with real data
-      async function updateDashboard() {
-        try {
-          // Fetch all data
-          const [activeUsers, avgStreak, journalData, interventionsCompleted] =
-            await Promise.all([
-              fetchActiveUsers(),
-              fetchAverageStreak(),
-              fetchJournalEntries(),
-              fetchInterventionsCompleted(),
-            ]);
-
-          // Update stat cards
-          document.getElementById("active-users").textContent =
-            activeUsers.toLocaleString();
-          document.getElementById("avg-streak").textContent = avgStreak;
-          document.getElementById("journal-entries").textContent =
-            journalData.total.toLocaleString();
-          document.getElementById("interventions-completed").textContent =
-            interventionsCompleted.toLocaleString();
-
-          // Update charts
-          await updateCharts(journalData.breakdown);
-        } catch (error) {
-          console.error("Error updating dashboard:", error);
-          // Fall back to dummy data
-          initializeWithDummyData();
-        }
-      }
-
-      async function updateCharts(journalBreakdown) {
-        const [growthData, interventionData] = await Promise.all([
-          fetchUserGrowthData(),
-          fetchInterventionEffectiveness(),
-        ]);
-
-        // Initialize charts with real data
-        initializeCharts(growthData, journalBreakdown, interventionData);
-      }
-
-      function initializeCharts(
-        growthData,
-        journalBreakdown,
-        interventionData,
-      ) {
-        // User Growth Chart
-
-        // User Growth Chart
-        const growthCtx = document
-          .getElementById("growthChart")
-          .getContext("2d");
-        growthChart = new Chart(growthCtx, {
-          type: "line",
-          data: {
-            labels: growthData.labels,
-            datasets: [
-              {
-                label: "Total Users",
-                data: growthData.data,
-                borderColor: "#5b7553",
-                backgroundColor: "rgba(91, 117, 83, 0.1)",
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            scales: {
-              x: {
-                grid: {
-                  display: false,
-                },
-              },
-              y: {
-                beginAtZero: true,
-                grid: {
-                  color: "rgba(0,0,0,0.1)",
-                },
-              },
-            },
-          },
+        statElements.forEach((elementId) => {
+          const element = document.getElementById(elementId);
+          if (element) element.textContent = "...";
         });
 
-        // Journal Entries Pie Chart
-        const journalCtx = document
-          .getElementById("journalChart")
-          .getContext("2d");
-        journalChart = new Chart(journalCtx, {
-          type: "doughnut",
-          data: {
-            labels: ["Cravings", "Triggers", "Milestones", "Reflections"],
-            datasets: [
-              {
-                data: [
-                  journalBreakdown.cravings,
-                  journalBreakdown.triggers,
-                  journalBreakdown.milestones,
-                  journalBreakdown.reflections,
-                ],
-                backgroundColor: ["#5b7553", "#e07a5f", "#d4a574", "#8faf85"],
-                borderWidth: 0,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-          },
-        });
-
-        // Intervention Effectiveness Chart
-        const interventionCtx = document
-          .getElementById("interventionChart")
-          .getContext("2d");
-        interventionChart = new Chart(interventionCtx, {
-          type: "bar",
-          data: {
-            labels: interventionData.labels,
-            datasets: [
-              {
-                label: "Completion Rate (%)",
-                data: interventionData.data,
-                backgroundColor: "#5b7553",
-                borderRadius: 4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            scales: {
-              x: {
-                grid: {
-                  display: false,
-                },
-              },
-              y: {
-                beginAtZero: true,
-                max: 100,
-                grid: {
-                  color: "rgba(0,0,0,0.1)",
-                },
-                ticks: {
-                  callback: function (value) {
-                    return value + "%";
-                  },
-                },
-              },
-            },
-          },
-        });
-
-        // Daily Active Users Chart
-        const dauCtx = document.getElementById("dauChart").getContext("2d");
-        dauChart = new Chart(dauCtx, {
-          type: "line",
-          data: {
-            labels: Array.from({ length: 30 }, (_, i) => i + 1),
-            datasets: [
-              {
-                label: "Daily Active Users",
-                data: generateDailyActiveUsersData(), // Generate based on current user count
-                borderColor: "#e07a5f",
-                backgroundColor: "rgba(224, 122, 95, 0.1)",
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false,
-              },
-            },
-            scales: {
-              x: {
-                grid: {
-                  display: false,
-                },
-              },
-              y: {
-                beginAtZero: true,
-                grid: {
-                  color: "rgba(0,0,0,0.1)",
-                },
-              },
-            },
-          },
-        });
-      }
-
-      function generateDailyActiveUsersData() {
-        // Generate realistic daily active users data based on total users
-        const totalUsers =
-          parseInt(
-            document
-              .getElementById("active-users")
-              .textContent.replace(/,/g, ""),
-          ) || 2847;
-        const baseDAU = Math.floor(totalUsers * 0.6); // 60% daily activity rate
-
-        return Array.from({ length: 30 }, (_, i) => {
-          const variance = Math.floor(Math.random() * 200) - 100; // ±100 variance
-          return Math.max(baseDAU + variance, Math.floor(baseDAU * 0.8));
-        });
-      }
-
-      function initializeWithDummyData() {
-        // Fallback dummy data initialization
-        const dummyGrowthData = {
-          labels: [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-          ],
-          data: [
-            324, 456, 623, 891, 1245, 1678, 2034, 2398, 2547, 2672, 2734, 2847,
-          ],
-        };
-
-        const dummyJournalBreakdown = {
-          cravings: 5247,
-          triggers: 4321,
-          milestones: 3395,
-          reflections: 2469,
-        };
-
-        const dummyInterventionData = {
-          labels: [
-            "Box Breathing",
-            "Urge Surfing",
-            "Guided Visualization",
-            "Quick Sketch",
-            "Memory Match",
-            "Grounding",
-            "Water Reminder",
-          ],
-          data: [87, 82, 79, 76, 74, 73, 68],
-        };
-
-        initializeCharts(
-          dummyGrowthData,
-          dummyJournalBreakdown,
-          dummyInterventionData,
-        );
-      }
-
-      // Update Growth Chart function
-      function updateGrowthChart(period) {
-        // Update active button
-        document
-          .querySelectorAll(".filter-btn")
-          .forEach((btn) => btn.classList.remove("active"));
-        event.target.classList.add("active");
-
-        // This could be enhanced to fetch filtered data from Firebase
-        // For now, keeping the existing logic
-        let data, labels;
-        const currentData = growthChart.data.datasets[0].data;
-        const currentTotal = currentData[currentData.length - 1];
-
-        switch (period) {
-          case "7d":
-            labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-            data = Array.from(
-              { length: 7 },
-              (_, i) =>
-                currentTotal - (7 - i - 1) * Math.floor(Math.random() * 10),
-            );
-            break;
-          case "30d":
-            labels = Array.from({ length: 30 }, (_, i) => i + 1);
-            data = Array.from(
-              { length: 30 },
-              (_, i) =>
-                currentTotal - (30 - i - 1) * Math.floor(Math.random() * 50),
-            );
-            break;
-          case "90d":
-            labels = Array.from({ length: 12 }, (_, i) => `Week ${i + 1}`);
-            data = Array.from(
-              { length: 12 },
-              (_, i) =>
-                currentTotal - (12 - i - 1) * Math.floor(Math.random() * 100),
-            );
-            break;
-          default:
-            return; // Keep current data for 1Y
+        try {
+          // Initialize the dashboard
+          await initializeDashboard();
+        } catch (error) {
+          console.error("Error initializing dashboard:", error);
+          // Set error states
+          statElements.forEach((elementId) => {
+            const element = document.getElementById(elementId);
+            if (element) {
+              element.textContent = "Error";
+              element.className += " error";
+            }
+          });
         }
-
-        growthChart.data.labels = labels;
-        growthChart.data.datasets[0].data = data;
-        growthChart.update();
-      }
-
-      // Animate numbers on page load
-      function animateValue(id, start, end, duration) {
-        const obj = document.getElementById(id);
-        const range = end - start;
-        const increment = end > start ? 1 : -1;
-        const stepTime = Math.abs(Math.floor(duration / range));
-        let current = start;
-        const timer = setInterval(() => {
-          current += increment;
-          if (id === "avg-streak") {
-            obj.textContent = current.toFixed(1);
-          } else {
-            obj.textContent = current.toLocaleString();
-          }
-          if (current === end) {
-            clearInterval(timer);
-          }
-        }, stepTime);
-      }
-
-      // Initialize dashboard on page load
-      window.addEventListener("load", async () => {
-        await updateDashboard();
-
-        // Real-time updates every 5 minutes
-        setInterval(updateDashboard, 5 * 60 * 1000);
       });
-
-      // Intervention Effectiveness Chart
-      const interventionCtx = document
-        .getElementById("interventionChart")
-        .getContext("2d");
-      const interventionChart = new Chart(interventionCtx, {
-        type: "bar",
-        data: {
-          labels: [
-            "Box Breathing",
-            "Urge Surfing",
-            "Guided Visualization",
-            "Quick Sketch",
-            "Memory Match",
-            "Grounding",
-            "Water Reminder",
-          ],
-          datasets: [
-            {
-              label: "Completion Rate (%)",
-              data: [87, 82, 79, 76, 74, 73, 68],
-              backgroundColor: "#5b7553",
-              borderRadius: 4,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-          scales: {
-            x: {
-              grid: {
-                display: false,
-              },
-            },
-            y: {
-              beginAtZero: true,
-              max: 100,
-              grid: {
-                color: "rgba(0,0,0,0.1)",
-              },
-              ticks: {
-                callback: function (value) {
-                  return value + "%";
-                },
-              },
-            },
-          },
-        },
-      });
-
-      // Daily Active Users Chart
-      const dauCtx = document.getElementById("dauChart").getContext("2d");
-      const dauChart = new Chart(dauCtx, {
-        type: "line",
-        data: {
-          labels: Array.from({ length: 30 }, (_, i) => i + 1),
-          datasets: [
-            {
-              label: "Daily Active Users",
-              data: [
-                1243, 1456, 1387, 1523, 1689, 1734, 1823, 1756, 1698, 1789,
-                1834, 1923, 1867, 1945, 2012, 2134, 2089, 2167, 2234, 2298,
-                2356, 2423, 2467, 2534, 2587, 2634, 2689, 2734, 2767, 2823,
-              ],
-              borderColor: "#e07a5f",
-              backgroundColor: "rgba(224, 122, 95, 0.1)",
-              borderWidth: 2,
-              fill: true,
-              tension: 0.4,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-          scales: {
-            x: {
-              grid: {
-                display: false,
-              },
-            },
-            y: {
-              beginAtZero: true,
-              grid: {
-                color: "rgba(0,0,0,0.1)",
-              },
-            },
-          },
-        },
-      });
-
-      // Update Growth Chart function
-      function updateGrowthChart(period) {
-        // Update active button
-        document
-          .querySelectorAll(".filter-btn")
-          .forEach((btn) => btn.classList.remove("active"));
-        event.target.classList.add("active");
-
-        // Mock data for different periods
-        let data, labels;
-        switch (period) {
-          case "7d":
-            labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-            data = [2723, 2734, 2756, 2767, 2789, 2823, 2847];
-            break;
-          case "30d":
-            labels = Array.from({ length: 30 }, (_, i) => i + 1);
-            data = [
-              2547, 2567, 2589, 2612, 2634, 2656, 2678, 2698, 2723, 2734, 2756,
-              2767, 2789, 2812, 2823, 2845, 2867, 2889, 2912, 2934, 2956, 2978,
-              3001, 3023, 3045, 3067, 3089, 3112, 3134, 2847,
-            ];
-            break;
-          case "90d":
-            labels = [
-              "Week 1",
-              "Week 2",
-              "Week 3",
-              "Week 4",
-              "Week 5",
-              "Week 6",
-              "Week 7",
-              "Week 8",
-              "Week 9",
-              "Week 10",
-              "Week 11",
-              "Week 12",
-            ];
-            data = [
-              2234, 2298, 2356, 2423, 2467, 2534, 2587, 2634, 2689, 2734, 2767,
-              2847,
-            ];
-            break;
-          default:
-            labels = [
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ];
-            data = [
-              324, 456, 623, 891, 1245, 1678, 2034, 2398, 2547, 2672, 2734,
-              2847,
-            ];
-        }
-
-        growthChart.data.labels = labels;
-        growthChart.data.datasets[0].data = data;
-        growthChart.update();
-      }
-
-      // Animate numbers on page load
-      function animateValue(id, start, end, duration) {
-        const obj = document.getElementById(id);
-        const range = end - start;
-        const increment = end > start ? 1 : -1;
-        const stepTime = Math.abs(Math.floor(duration / range));
-        let current = start;
-        const timer = setInterval(() => {
-          current += increment;
-          if (id === "avg-streak") {
-            obj.textContent = current.toFixed(1);
-          } else {
-            obj.textContent = current.toLocaleString();
-          }
-          if (current === end) {
-            clearInterval(timer);
-          }
-        }, stepTime);
-      }
-
-      // Start animations when page loads
-      window.addEventListener("load", () => {
-        animateValue("active-users", 0, 2847, 1000);
-        animateValue("avg-streak", 0, 27.3, 1000);
-        animateValue("journal-entries", 0, 15432, 1200);
-        animateValue("interventions-completed", 0, 8921, 1100);
-      });
-
-      // Real-time updates simulation
-      setInterval(() => {
-        const activeUsers = document.getElementById("active-users");
-        const currentValue = parseInt(
-          activeUsers.textContent.replace(/,/g, ""),
-        );
-        const newValue = currentValue + Math.floor(Math.random() * 3);
-        activeUsers.textContent = newValue.toLocaleString();
-      }, 30000); // Update every 30 seconds
     </script>
   </body>
 </html>
