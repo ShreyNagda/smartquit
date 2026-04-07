@@ -15,10 +15,11 @@ dependencies:
   riverpod_annotation: ^2.3.3
 
   # Firebase
-  firebase_core: ^2.25.4
+  firebase_core: ^2.32.0
   firebase_auth: ^4.17.4
   cloud_firestore: ^4.15.4
   firebase_messaging: ^14.7.15
+  flutter_local_notifications: ^17.2.2
   firebase_analytics: ^10.8.7
   google_sign_in: ^6.2.1
 
@@ -34,6 +35,8 @@ dependencies:
   uuid: ^4.3.3
   intl: ^0.19.0
   shared_preferences: ^2.2.2
+  flutter_timezone: ^3.0.1
+  timezone: ^0.9.4
   haptic_feedback: ^0.5.1+1
   audioplayers: ^6.0.0
   path_provider: ^2.1.2
@@ -46,6 +49,11 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter_svg: ^2.0.9
   flutter_launcher_icons: ^0.14.4
+  http: ^1.6.0
+
+  # AI / Gemini
+  google_generative_ai: ^0.4.3
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -59,16 +67,11 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-flutter_launcher_icons:
-  android: "launcher_icon"
-  ios: true
-  image_path: "assets/images/logo.png"
-  min_sdk_android: 21
-
   assets:
-    - assets/images/
-    - assets/audio/
-    - assets/lottie/
+    - assets/images/logo.png
+    - assets/images/logo-transparent.png
+    - assets/audio/chime.mp3
+    - .env
 
   fonts:
     - family: Montserrat
@@ -82,3 +85,9 @@ flutter_launcher_icons:
           weight: 700
         - asset: assets/fonts/Montserrat-Light.ttf
           weight: 300
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.png"
+  min_sdk_android: 21

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/app_theme.dart';
 import '../../models/stats_model.dart';
+import '../../models/ai_insights.dart';
 import '../../providers/stats_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../providers/insights_provider.dart';
 import '../../widgets/stats_card.dart';
 
 /// Stats screen showing health recovery milestones, savings, and progress.
@@ -20,6 +22,8 @@ class StatsScreen extends ConsumerWidget {
     final next = ref.watch(nextMilestoneProvider);
     final blocked = ref.watch(cravingsBlockedProvider);
     final userAsync = ref.watch(userStreamProvider);
+    final eligibility = ref.watch(insightsEligibilityProvider);
+    final latestInsights = ref.watch(latestInsightsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -118,6 +122,10 @@ class StatsScreen extends ConsumerWidget {
               ),
             ],
           ),
+          const SizedBox(height: 24),
+
+          // AI Insights Card
+          _buildInsightsCard(context, eligibility, latestInsights),
           const SizedBox(height: 24),
 
           // Health recovery
@@ -304,6 +312,148 @@ class StatsScreen extends ConsumerWidget {
           ),
           if (isAchieved) const Text('✅', style: TextStyle(fontSize: 18)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildInsightsCard(
+    BuildContext context,
+    AsyncValue<InsightsEligibility> eligibility,
+    AsyncValue<AIInsights?> latestInsights,
+  ) {
+    final hasInsights = latestInsights.valueOrNull != null && 
+                        !latestInsights.valueOrNull!.isEmpty;
+    final isEligible = eligibility.valueOrNull?.isEligible ?? false;
+    final entriesNeeded = eligibility.valueOrNull?.entriesNeeded ?? 5;
+    
+    return GestureDetector(
+      onTap: () {
+        if (hasInsights || isEligible) {
+          Navigator.pushNamed(context, '/insights');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Log $entriesNeeded more journal entries to unlock AI Insights',
+              ),
+              behavior: SnackBarBehavior.floating,
+              action: SnackBarAction(
+                label: 'Log Entry',
+                onPressed: () => Navigator.pushNamed(context, '/journal/new'),
+              ),
+            ),
+          );
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: hasInsights
+              ? const LinearGradient(
+                  colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: hasInsights ? null : AppColors.surface,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: hasInsights
+                  ? const Color(0xFF667eea).withOpacity(0.3)
+                  : Colors.black12,
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: hasInsights
+                    ? Colors.white.withOpacity(0.2)
+                    : AppColors.primaryLight.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.psychology,
+                color: hasInsights ? Colors.white : AppColors.primary,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'AI Insights',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Montserrat',
+                      color: hasInsights ? Colors.white : AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  eligibility.when(
+                    data: (elig) {
+                      if (hasInsights) {
+                        return Text(
+                          'Tap to view your personalized insights',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Montserrat',
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                        );
+                      } else if (elig.isEligible) {
+                        return const Text(
+                          'Tap to generate insights from your journal',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Montserrat',
+                            color: AppColors.textSecondary,
+                          ),
+                        );
+                      } else {
+                        return Text(
+                          '${elig.entriesNeeded} more entries to unlock',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Montserrat',
+                            color: AppColors.textSecondary,
+                          ),
+                        );
+                      }
+                    },
+                    loading: () => const SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    error: (_, __) => const Text(
+                      'Tap to view insights',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Montserrat',
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: hasInsights ? Colors.white70 : AppColors.textLight,
+              size: 18,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/intervention_provider.dart';
+import '../../services/notification_service.dart';
 import 'ble_logs_screen.dart';
 
 /// Settings screen with preferences, privacy, and account management.
@@ -231,11 +232,70 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ),
                 value: user.preferences.dailyReminders,
-                onChanged: (v) => ref
-                    .read(userActionsProvider.notifier)
-                    .updatePreferences(
-                        user.preferences.copyWith(dailyReminders: v)),
+                onChanged: (v) async {
+                  final updatedPrefs =
+                      user.preferences.copyWith(dailyReminders: v);
+
+                  await NotificationService().syncDailyReminderSettings(
+                    enabled: v,
+                    hour: updatedPrefs.reminderHour,
+                    minute: updatedPrefs.reminderMinute,
+                  );
+
+                  await ref
+                      .read(userActionsProvider.notifier)
+                      .updatePreferences(updatedPrefs);
+
+                  if (context.mounted) {
+                    final hh =
+                        updatedPrefs.reminderHour.toString().padLeft(2, '0');
+                    final mm =
+                        updatedPrefs.reminderMinute.toString().padLeft(2, '0');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(v
+                            ? 'Daily reminder set for $hh:$mm'
+                            : 'Daily reminders turned off'),
+                      ),
+                    );
+                  }
+                },
                 activeColor: AppColors.primary,
+              ),
+              ListTile(
+                leading:
+                    const Icon(Icons.schedule, color: AppColors.textSecondary),
+                title: const Text(
+                  'Reminder Time',
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 14,
+                  ),
+                ),
+                subtitle: Text(
+                  user.preferences.dailyReminders
+                      ? 'Current: ${_formatReminderTime(context, user.preferences.reminderHour, user.preferences.reminderMinute)}'
+                      : 'Enable daily reminders to set a time',
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 12,
+                    color: AppColors.textLight,
+                  ),
+                ),
+                trailing: Text(
+                  _formatReminderTime(
+                    context,
+                    user.preferences.reminderHour,
+                    user.preferences.reminderMinute,
+                  ),
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+                onTap: () => _pickReminderTime(context, ref, user),
               ),
               const SizedBox(height: 24),
 
@@ -252,6 +312,38 @@ class SettingsScreen extends ConsumerWidget {
                     builder: (context) => const BleLogsScreen(),
                   ),
                 ),
+              ),
+              _infoTile(
+                icon: Icons.notifications_active,
+                title: 'Test Notification',
+                value: 'Tap to test',
+                onTap: () async {
+                  await NotificationService().showTestNotification();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                            'Test notification triggered. Check your notification shade.'),
+                      ),
+                    );
+                  }
+                },
+              ),
+              _infoTile(
+                icon: Icons.schedule,
+                title: 'Test Scheduled',
+                value: 'Triggers in 10s',
+                onTap: () async {
+                  await NotificationService().showTestScheduledNotification();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                            'Scheduled notification set for 10 seconds. Wait and check.'),
+                      ),
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 24),
 
@@ -487,6 +579,59 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _formatReminderTime(BuildContext context, int hour, int minute) {
+    final time = TimeOfDay(hour: hour, minute: minute);
+    return time.format(context);
+  }
+
+  Future<void> _pickReminderTime(
+    BuildContext context,
+    WidgetRef ref,
+    UserModel user,
+  ) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(
+        hour: user.preferences.reminderHour,
+        minute: user.preferences.reminderMinute,
+      ),
+    );
+
+    if (picked == null) return;
+
+    final updatedPrefs = user.preferences.copyWith(
+      reminderHour: picked.hour,
+      reminderMinute: picked.minute,
+    );
+
+    await NotificationService().syncDailyReminderSettings(
+      enabled: updatedPrefs.dailyReminders,
+      hour: updatedPrefs.reminderHour,
+      minute: updatedPrefs.reminderMinute,
+    );
+
+    await ref
+        .read(userActionsProvider.notifier)
+        .updatePreferences(updatedPrefs);
+
+    if (context.mounted) {
+      final formatted = _formatReminderTime(
+        context,
+        picked.hour,
+        picked.minute,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            updatedPrefs.dailyReminders
+                ? 'Reminder time updated to $formatted'
+                : 'Time saved. Enable daily reminders to start notifications.',
+          ),
+        ),
+      );
+    }
   }
 
   void _selectInterventions(

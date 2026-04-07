@@ -4,6 +4,7 @@ import '../models/user_model.dart';
 import '../models/journal_entry.dart';
 import '../models/stats_model.dart';
 import '../models/supporter_model.dart';
+import '../models/ai_insights.dart';
 
 /// Central Firestore service for all database operations.
 class FirebaseService {
@@ -21,6 +22,9 @@ class FirebaseService {
 
   CollectionReference<Map<String, dynamic>> _nudgesCol(String uid) =>
       _userDoc(uid).collection('nudges');
+
+  CollectionReference<Map<String, dynamic>> _insightsCol(String uid) =>
+      _userDoc(uid).collection('insights');
 
   // ─── User CRUD ─────────────────────────────────────────────────
 
@@ -250,5 +254,57 @@ class FirebaseService {
   /// Update FCM token for push notifications.
   Future<void> updateFcmToken(String uid, String token) async {
     await updateUser(uid, {'fcm_token': token});
+  }
+
+  // ─── AI Insights ──────────────────────────────────────────────
+
+  /// Save AI-generated insights.
+  Future<String> saveInsights(String uid, AIInsights insights) async {
+    final docRef = await _insightsCol(uid).add(insights.toMap());
+    return docRef.id;
+  }
+
+  /// Get the latest AI insights.
+  Future<AIInsights?> getLatestInsights(String uid) async {
+    final snap = await _insightsCol(uid)
+        .orderBy('generated_at', descending: true)
+        .limit(1)
+        .get();
+
+    if (snap.docs.isEmpty) return null;
+    final doc = snap.docs.first;
+    return AIInsights.fromMap(doc.data(), doc.id);
+  }
+
+  /// Stream AI insights (latest first).
+  Stream<List<AIInsights>> streamInsights(String uid) {
+    return _insightsCol(uid)
+        .orderBy('generated_at', descending: true)
+        .limit(10)
+        .snapshots()
+        .map((snap) => snap.docs
+            .map((doc) => AIInsights.fromMap(doc.data(), doc.id))
+            .toList());
+  }
+
+  /// Delete old insights (keep only last N).
+  Future<void> pruneInsights(String uid, {int keepCount = 5}) async {
+    final snap = await _insightsCol(uid)
+        .orderBy('generated_at', descending: true)
+        .get();
+
+    if (snap.docs.length <= keepCount) return;
+
+    final batch = _db.batch();
+    for (var i = keepCount; i < snap.docs.length; i++) {
+      batch.delete(snap.docs[i].reference);
+    }
+    await batch.commit();
+  }
+
+  /// Get journal entries count for insights eligibility.
+  Future<int> getJournalEntryCount(String uid) async {
+    final snap = await _journalCol(uid).count().get();
+    return snap.count ?? 0;
   }
 }

@@ -6,7 +6,9 @@ import '../../providers/journal_provider.dart';
 
 /// Screen for creating a new journal entry (craving, relapse, near miss, milestone).
 class JournalEntryScreen extends ConsumerStatefulWidget {
-  const JournalEntryScreen({super.key});
+  final Map<String, dynamic>? args;
+
+  const JournalEntryScreen({super.key, this.args});
 
   @override
   ConsumerState<JournalEntryScreen> createState() => _JournalEntryScreenState();
@@ -20,23 +22,36 @@ class _JournalEntryScreenState extends ConsumerState<JournalEntryScreen> {
   bool _isSubmitting = false;
   bool _initialized = false;
 
+  // Enhanced fields for SmokeBand entries
+  bool _fromSmokeBand = false;
+  double? _mq9Ppm;
+  String? _selectedLocation;
+  String? _selectedEmotionalState;
+  String? _selectedCompanions;
+  String? _selectedActivity;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Get route arguments and set initial event type
+    // Get route arguments and set initial values
     if (!_initialized) {
       _initialized = true;
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is Map<String, dynamic> && args['eventType'] != null) {
-        final eventTypeStr = args['eventType'] as String;
-        if (eventTypeStr == 'relapse') {
-          setState(() {
-            _eventType = JournalEventType.relapse;
-            _notesController.text = 'Smoking detected by SmartQuit Band';
-          });
+      final args = widget.args ??
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+      if (args != null) {
+        if (args['eventType'] == 'relapse') {
+          _eventType = JournalEventType.relapse;
+        }
+
+        if (args['fromSmokeBand'] == true) {
+          _fromSmokeBand = true;
+          _mq9Ppm = args['mq9Ppm'] as double?;
+          _notesController.text = 'Smoking detected by SmartQuit Band';
         }
       }
+      setState(() {});
     }
   }
 
@@ -84,6 +99,12 @@ class _JournalEntryScreenState extends ConsumerState<JournalEntryScreen> {
           triggerType: _selectedTrigger ?? 'Unknown',
           intensity: _intensity,
           notes: _notesController.text,
+          fromSmokeBand: _fromSmokeBand,
+          location: _selectedLocation,
+          emotionalState: _selectedEmotionalState,
+          companions: _selectedCompanions,
+          activity: _selectedActivity,
+          mq9Ppm: _mq9Ppm,
         );
         break;
       case JournalEventType.milestone:
@@ -110,44 +131,90 @@ class _JournalEntryScreenState extends ConsumerState<JournalEntryScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('New Entry'),
+        title: Text(_fromSmokeBand ? 'Reflect on What Happened' : 'New Entry'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Event type selection
-            const Text(
-              'What happened?',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Montserrat',
-                color: AppColors.textPrimary,
+            // SmokeBand indicator
+            if (_fromSmokeBand) ...[
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.sensors, color: AppColors.error),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Detected by SmartQuit Band',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Montserrat',
+                              color: AppColors.error,
+                            ),
+                          ),
+                          if (_mq9Ppm != null)
+                            Text(
+                              'CO Level: ${_mq9Ppm!.toStringAsFixed(1)} PPM',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontFamily: 'Montserrat',
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: JournalEventType.values.map((type) {
-                final isSelected = _eventType == type;
-                return ChoiceChip(
-                  label: Text(type.displayName),
-                  selected: isSelected,
-                  onSelected: (_) => setState(() => _eventType = type),
-                  labelStyle: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected
-                        ? AppColors.primary
-                        : AppColors.textSecondary,
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
+            ],
+
+            // Event type selection (hide for SmokeBand - always relapse)
+            if (!_fromSmokeBand) ...[
+              const Text(
+                'What happened?',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Montserrat',
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: JournalEventType.values.map((type) {
+                  final isSelected = _eventType == type;
+                  return ChoiceChip(
+                    label: Text(type.displayName),
+                    selected: isSelected,
+                    onSelected: (_) => setState(() => _eventType = type),
+                    labelStyle: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w400,
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.textSecondary,
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+            ],
 
             // Trigger selection (not for milestones)
             if (_eventType != JournalEventType.milestone) ...[
@@ -181,6 +248,11 @@ class _JournalEntryScreenState extends ConsumerState<JournalEntryScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 24),
+
+              // Enhanced fields for SmokeBand entries (relapse only)
+              if (_fromSmokeBand && _eventType == JournalEventType.relapse) ...[
+                _buildEnhancedFieldsSection(),
+              ],
 
               // Intensity slider
               const Text(
@@ -319,6 +391,135 @@ class _JournalEntryScreenState extends ConsumerState<JournalEntryScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildEnhancedFieldsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Emotional State
+        const Text(
+          'How were you feeling?',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Montserrat',
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: EmotionalStates.all.map((state) {
+            final isSelected = _selectedEmotionalState == state;
+            return ChoiceChip(
+              label: Text(state),
+              selected: isSelected,
+              onSelected: (_) =>
+                  setState(() => _selectedEmotionalState = state),
+              labelStyle: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 24),
+
+        // Location
+        const Text(
+          'Where were you?',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Montserrat',
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: SmokingLocations.all.map((location) {
+            final isSelected = _selectedLocation == location;
+            return ChoiceChip(
+              label: Text(location),
+              selected: isSelected,
+              onSelected: (_) => setState(() => _selectedLocation = location),
+              labelStyle: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 24),
+
+        // Companions
+        const Text(
+          'Who were you with?',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Montserrat',
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: CompanionSituations.all.map((companion) {
+            final isSelected = _selectedCompanions == companion;
+            return ChoiceChip(
+              label: Text(companion),
+              selected: isSelected,
+              onSelected: (_) =>
+                  setState(() => _selectedCompanions = companion),
+              labelStyle: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 24),
+
+        // Activity
+        const Text(
+          'What were you doing?',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Montserrat',
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: SmokingActivities.all.map((activity) {
+            final isSelected = _selectedActivity == activity;
+            return ChoiceChip(
+              label: Text(activity),
+              selected: isSelected,
+              onSelected: (_) => setState(() => _selectedActivity = activity),
+              labelStyle: TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 13,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 24),
+      ],
     );
   }
 }

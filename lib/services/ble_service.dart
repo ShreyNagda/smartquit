@@ -41,7 +41,7 @@ class BleService {
     try {
       // Check if Bluetooth is supported
       if (!await FlutterBluePlus.isSupported) {
-        print('❌ Bluetooth not supported on this device');
+        print('Bluetooth not supported on this device');
         return false;
       }
 

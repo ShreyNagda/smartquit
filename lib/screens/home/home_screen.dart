@@ -5,10 +5,12 @@ import '../../theme/app_theme.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/stats_provider.dart';
 import '../../providers/ble_provider.dart';
+import '../../providers/insights_provider.dart';
 import '../../services/ble_service.dart';
 import '../../widgets/panic_button.dart';
 import '../../widgets/streak_card.dart';
 import '../../widgets/stats_card.dart';
+import '../smoking/smoking_detected_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -60,10 +62,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _handleSmokingDetected() {
-    // Navigate to journal entry with relapse event
+    // Get latest BLE data for the detection screen
+    final bleState = ref.read(bleNotifierProvider);
+    final latestData = bleState.latestData;
+
+    // Navigate to smoking detected screen
     Navigator.of(context).pushNamed(
-      '/journal/new',
-      arguments: {'eventType': 'relapse'},
+      '/smoking-detected',
+      arguments: SmokingDetectedArgs(
+        detectedAt: DateTime.now(),
+        mq9Ppm: latestData?['mq9_ppm'] as double?,
+        prediction: latestData?['prediction'] as int?,
+      ),
     );
   }
 
@@ -299,6 +309,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
 
+              const SizedBox(height: 16),
+
+              // AI Insights Button
+              _buildAIInsightsButton(context, ref),
+
               const SizedBox(height: 24),
 
               // Motivation quote
@@ -330,6 +345,119 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
 
               const SizedBox(height: 32),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAIInsightsButton(BuildContext context, WidgetRef ref) {
+    final eligibility = ref.watch(insightsEligibilityProvider);
+    final latestInsights = ref.watch(latestInsightsProvider);
+    final hasInsights = latestInsights.valueOrNull != null &&
+        !latestInsights.valueOrNull!.isEmpty;
+    final isEligible = eligibility.valueOrNull?.isEligible ?? false;
+    final entriesNeeded = eligibility.valueOrNull?.entriesNeeded ?? 5;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () {
+          if (hasInsights || isEligible) {
+            Navigator.pushNamed(context, '/insights');
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Log $entriesNeeded more journal entries to unlock AI Insights',
+                ),
+                behavior: SnackBarBehavior.floating,
+                action: SnackBarAction(
+                  label: 'Log Entry',
+                  onPressed: () => Navigator.pushNamed(context, '/journal/new'),
+                ),
+              ),
+            );
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: hasInsights
+                ? const LinearGradient(
+                    colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: hasInsights ? null : AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: hasInsights
+                    ? const Color(0xFF667eea).withOpacity(0.3)
+                    : Colors.black12,
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: hasInsights
+                      ? Colors.white.withOpacity(0.2)
+                      : AppColors.primaryLight.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.psychology,
+                  color: hasInsights ? Colors.white : AppColors.primary,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'AI Insights',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Montserrat',
+                        color:
+                            hasInsights ? Colors.white : AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      hasInsights
+                          ? 'View your personalized insights'
+                          : isEligible
+                              ? 'Generate insights from your journal'
+                              : '$entriesNeeded more entries to unlock',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Montserrat',
+                        color: hasInsights
+                            ? Colors.white.withOpacity(0.8)
+                            : AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: hasInsights ? Colors.white70 : AppColors.textLight,
+                size: 16,
+              ),
             ],
           ),
         ),

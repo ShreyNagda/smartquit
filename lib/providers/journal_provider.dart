@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/journal_entry.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 import 'auth_provider.dart';
 
 /// Stream of journal entries for the current user.
@@ -87,6 +88,12 @@ class JournalActionsNotifier extends StateNotifier<JournalActionState> {
     required String triggerType,
     required int intensity,
     required String notes, // Required for relapse — captures "Why"
+    bool fromSmokeBand = false,
+    String? location,
+    String? emotionalState,
+    String? companions,
+    String? activity,
+    double? mq9Ppm,
   }) async {
     return _addEntry(
       eventType: JournalEventType.relapse,
@@ -94,6 +101,12 @@ class JournalActionsNotifier extends StateNotifier<JournalActionState> {
       intensity: intensity,
       notes: notes,
       wasResisted: false,
+      fromSmokeBand: fromSmokeBand,
+      location: location,
+      emotionalState: emotionalState,
+      companions: companions,
+      activity: activity,
+      mq9Ppm: mq9Ppm,
     );
   }
 
@@ -116,6 +129,12 @@ class JournalActionsNotifier extends StateNotifier<JournalActionState> {
     String? notes,
     String? interventionUsed,
     required bool wasResisted,
+    bool fromSmokeBand = false,
+    String? location,
+    String? emotionalState,
+    String? companions,
+    String? activity,
+    double? mq9Ppm,
   }) async {
     final uid = _uid;
     if (uid == null) return false;
@@ -132,10 +151,23 @@ class JournalActionsNotifier extends StateNotifier<JournalActionState> {
         notes: notes,
         interventionUsed: interventionUsed,
         wasResisted: wasResisted,
+        fromSmokeBand: fromSmokeBand,
+        location: location,
+        emotionalState: emotionalState,
+        companions: companions,
+        activity: activity,
+        mq9Ppm: mq9Ppm,
       );
 
       final docId = await _db.addJournalEntry(uid, entry);
       state = JournalActionState(lastEntryId: docId);
+      
+      // Schedule motivational follow-up notification (30 minutes later)
+      await NotificationService().scheduleJournalFollowUp(
+        entryType: eventType.name,
+        triggerType: triggerType,
+      );
+      
       return true;
     } catch (e) {
       state = JournalActionState(error: e.toString());

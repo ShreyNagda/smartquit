@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/user_provider.dart';
+import '../providers/circle_provider.dart';
+import '../services/notification_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/panic_button.dart';
 import 'home/home_screen.dart';
@@ -36,6 +39,21 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    // Listen to user preferences for notification settings
+    ref.listen(userStreamProvider, (_, next) {
+      final prefs = next.valueOrNull?.preferences;
+      if (prefs == null) return;
+
+      NotificationService().syncDailyReminderSettings(
+        enabled: prefs.dailyReminders,
+        hour: prefs.reminderHour,
+        minute: prefs.reminderMinute,
+      );
+    });
+    
+    // Initialize nudge notification listener
+    ref.watch(nudgeNotificationListenerProvider);
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,

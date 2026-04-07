@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../models/supporter_model.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 import 'auth_provider.dart';
 
 /// Provider for Circle (family monitoring) operations.
@@ -34,6 +36,42 @@ final nudgesStreamProvider = StreamProvider<List<NudgeMessage>>((ref) {
     loading: () => Stream.value([]),
     error: (_, __) => Stream.value([]),
   );
+});
+
+/// Provider that listens to new nudges and shows notifications
+final nudgeNotificationListenerProvider = Provider<void>((ref) {
+  List<NudgeMessage>? previousNudges;
+  
+  ref.listen<AsyncValue<List<NudgeMessage>>>(nudgesStreamProvider, (previous, next) {
+    next.whenData((nudges) {
+      debugPrint('Nudges received: ${nudges.length}');
+      
+      if (previousNudges != null && nudges.isNotEmpty) {
+        // Check for new nudges (ones that weren't in the previous list)
+        final previousIds = previousNudges!.map((n) => '${n.fromUid}_${n.sentAt.millisecondsSinceEpoch}').toSet();
+        
+        for (final nudge in nudges) {
+          final nudgeId = '${nudge.fromUid}_${nudge.sentAt.millisecondsSinceEpoch}';
+          
+          // If this nudge wasn't in the previous list and is recent (within last 30 seconds)
+          if (!previousIds.contains(nudgeId)) {
+            final isRecent = DateTime.now().difference(nudge.sentAt).inSeconds < 30;
+            debugPrint('New nudge detected: $nudgeId, isRecent: $isRecent');
+            if (isRecent) {
+              // Show notification for new nudge
+              debugPrint('Showing nudge notification from ${nudge.fromName}');
+              NotificationService().showNudgeNotification(
+                fromName: nudge.fromName,
+                emoji: nudge.emoji,
+                message: nudge.message,
+              );
+            }
+          }
+        }
+      }
+      previousNudges = List.from(nudges);
+    });
+  });
 });
 
 // ─── Circle State ───────────────────────────────────────────────

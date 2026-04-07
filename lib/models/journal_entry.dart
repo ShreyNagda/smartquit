@@ -12,6 +12,14 @@ class JournalEntry {
   final String? interventionUsed;
   final bool wasResisted;
 
+  // Enhanced fields for SmokeBand-detected events
+  final bool fromSmokeBand;
+  final String? location;
+  final String? emotionalState;
+  final String? companions; // Who they were with
+  final String? activity; // What they were doing
+  final double? mq9Ppm; // CO sensor reading if from SmokeBand
+
   const JournalEntry({
     required this.id,
     required this.timestamp,
@@ -21,6 +29,12 @@ class JournalEntry {
     this.notes,
     this.interventionUsed,
     this.wasResisted = true,
+    this.fromSmokeBand = false,
+    this.location,
+    this.emotionalState,
+    this.companions,
+    this.activity,
+    this.mq9Ppm,
   });
 
   factory JournalEntry.fromMap(Map<String, dynamic> map, String docId) {
@@ -33,6 +47,12 @@ class JournalEntry {
       notes: map['notes'] as String?,
       interventionUsed: map['intervention_used'] as String?,
       wasResisted: map['was_resisted'] as bool? ?? true,
+      fromSmokeBand: map['from_smoke_band'] as bool? ?? false,
+      location: map['location'] as String?,
+      emotionalState: map['emotional_state'] as String?,
+      companions: map['companions'] as String?,
+      activity: map['activity'] as String?,
+      mq9Ppm: (map['mq9_ppm'] as num?)?.toDouble(),
     );
   }
 
@@ -45,6 +65,12 @@ class JournalEntry {
       'notes': notes,
       'intervention_used': interventionUsed,
       'was_resisted': wasResisted,
+      'from_smoke_band': fromSmokeBand,
+      if (location != null) 'location': location,
+      if (emotionalState != null) 'emotional_state': emotionalState,
+      if (companions != null) 'companions': companions,
+      if (activity != null) 'activity': activity,
+      if (mq9Ppm != null) 'mq9_ppm': mq9Ppm,
     };
   }
 
@@ -57,6 +83,12 @@ class JournalEntry {
     String? notes,
     String? interventionUsed,
     bool? wasResisted,
+    bool? fromSmokeBand,
+    String? location,
+    String? emotionalState,
+    String? companions,
+    String? activity,
+    double? mq9Ppm,
   }) {
     return JournalEntry(
       id: id ?? this.id,
@@ -67,6 +99,12 @@ class JournalEntry {
       notes: notes ?? this.notes,
       interventionUsed: interventionUsed ?? this.interventionUsed,
       wasResisted: wasResisted ?? this.wasResisted,
+      fromSmokeBand: fromSmokeBand ?? this.fromSmokeBand,
+      location: location ?? this.location,
+      emotionalState: emotionalState ?? this.emotionalState,
+      companions: companions ?? this.companions,
+      activity: activity ?? this.activity,
+      mq9Ppm: mq9Ppm ?? this.mq9Ppm,
     );
   }
 }
@@ -130,6 +168,68 @@ class SmokingTriggers {
     'Anxiety',
     'Celebration',
     'Habit/Automatic',
+    'Other',
+  ];
+}
+
+/// Common emotional states for journal entries
+class EmotionalStates {
+  static const List<String> all = [
+    'Stressed',
+    'Anxious',
+    'Bored',
+    'Sad',
+    'Angry',
+    'Frustrated',
+    'Lonely',
+    'Happy',
+    'Relaxed',
+    'Tired',
+    'Overwhelmed',
+    'Neutral',
+  ];
+}
+
+/// Common locations for smoking events
+class SmokingLocations {
+  static const List<String> all = [
+    'Home',
+    'Work',
+    'Car',
+    'Bar/Restaurant',
+    'Friend\'s Place',
+    'Outdoors',
+    'Party/Event',
+    'Other',
+  ];
+}
+
+/// Common companion situations
+class CompanionSituations {
+  static const List<String> all = [
+    'Alone',
+    'With Friends',
+    'With Coworkers',
+    'With Family',
+    'With Partner',
+    'At a Social Gathering',
+    'Other',
+  ];
+}
+
+/// Common activities during smoking
+class SmokingActivities {
+  static const List<String> all = [
+    'Taking a Break',
+    'After Eating',
+    'Drinking Coffee/Tea',
+    'Drinking Alcohol',
+    'Socializing',
+    'Working',
+    'Driving',
+    'Watching TV',
+    'On the Phone',
+    'Waiting',
     'Other',
   ];
 }

@@ -63,6 +63,7 @@ class _SplashScreenState extends State<SplashScreen>
                   width: 120,
                   height: 120,
                   errorBuilder: (context, error, stackTrace) {
+                    print('Error loading logo: $error');
                     return const Icon(
                       Icons.eco,
                       size: 100,

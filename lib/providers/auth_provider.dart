@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/auth_service.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 import '../models/user_model.dart';
 
 /// Auth service provider (singleton).
@@ -100,6 +101,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _db.createUser(user);
 
       state = state.copyWith(isLoading: false, user: credential.user);
+      await _syncTokenAndReminders(credential.user!.uid);
       return true;
     } on FirebaseAuthException catch (e) {
       state = state.copyWith(isLoading: false, error: e.message);
@@ -124,6 +126,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password: password,
       );
       state = state.copyWith(isLoading: false, user: credential.user);
+      await _syncTokenAndReminders(credential.user!.uid);
       return true;
     } on FirebaseAuthException catch (e) {
       state = state.copyWith(isLoading: false, error: e.message);
@@ -196,6 +199,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         user: user,
         isNewUser: isNewUser,
       );
+      await _syncTokenAndReminders(user.uid);
       return true;
     } on FirebaseAuthException catch (e) {
       print('❌ FirebaseAuthException: ${e.code} - ${e.message}');
@@ -240,8 +244,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = const AuthState();
       return true;
     } catch (e) {
-      state = state.copyWith(
-          isLoading: false, error: 'Failed to delete account.');
+      state =
+          state.copyWith(isLoading: false, error: 'Failed to delete account.');
       return false;
     }
   }
@@ -254,5 +258,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Clear new user flag after onboarding.
   void clearNewUserFlag() {
     state = state.copyWith(isNewUser: false);
+  }
+
+  Future<void> _syncTokenAndReminders(String uid) async {
+    try {
+      final notificationService = NotificationService();
+
+      // Token sync
+      final token = await notificationService.getToken();
+      if (token != null && token.isNotEmpty) {
+        await _db.updateFcmToken(uid, token);
+      }
+
+      // User preference-driven daily schedule
+      final user = await _db.getUser(uid);
+      final prefs = user?.preferences;
+      final enabled = prefs?.dailyReminders ?? true;
+      final hour = prefs?.reminderHour ?? 9;
+      final minute = prefs?.reminderMinute ?? 0;
+
+      await notificationService.schedulePostLoginJournalReminder();
+      await notificationService.syncDailyReminderSettings(
+        enabled: enabled,
+        hour: hour,
+        minute: minute,
+      );
+    } catch (e) {
+      // Non-blocking for auth flow
+      print('Reminder/token sync failed: $e');
+    }
   }
 }

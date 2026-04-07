@@ -46,3 +46,8 @@ app.*.map.json
 
 lib/firebase_options.dart
 *.apk
+
+# Environment files with API keys
+.env
+.env.local
+.env.*.local

@@ -3,11 +3,14 @@ import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 import 'theme/app_theme.dart';
 import 'providers/auth_provider.dart';
 import 'services/notification_service.dart';
 import 'services/widget_service.dart';
+import 'services/gemini_service.dart';
 
 // Screens
 import 'screens/splash_screen.dart';
@@ -21,6 +24,8 @@ import 'screens/journal/journal_entry_screen.dart';
 import 'screens/circle/circle_screen.dart';
 import 'screens/stats/stats_screen.dart';
 import 'screens/settings/settings_screen.dart';
+import 'screens/smoking/smoking_detected_screen.dart';
+import 'screens/insights/insights_screen.dart';
 
 // Intervention screens
 import 'screens/interventions/box_breathing_screen.dart';
@@ -39,6 +44,11 @@ import 'screens/app_shell.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
+  
+  // Load environment variables (gracefully handle if .env doesn't exist)
+  await _loadEnvFile();
+  
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -57,8 +67,30 @@ Future<void> main() async {
 
   // Initialize notifications
   await NotificationService().initialize();
+  
+  // Initialize Gemini service (gracefully handles missing API key)
+  await GeminiService.instance.initialize();
 
   runApp(const ProviderScope(child: BreatheFreeApp()));
+}
+
+/// Load .env file safely - doesn't throw if file doesn't exist
+Future<void> _loadEnvFile() async {
+  try {
+    // Check if .env is in assets or file system
+    await dotenv.load(fileName: '.env');
+    print('✅ .env file loaded successfully');
+    print('   GEMINI_API_KEY present: ${dotenv.env['GEMINI_API_KEY'] != null}');
+    if (dotenv.env['GEMINI_API_KEY'] != null) {
+      final key = dotenv.env['GEMINI_API_KEY']!;
+      print('   Key length: ${key.length}, starts with: ${key.substring(0, 10)}...');
+    }
+  } on Error catch (e) {
+    // FileNotFoundError is an Error, not an Exception
+    print('ℹ️ .env file not found: $e - AI insights will be disabled');
+  } catch (e) {
+    print('ℹ️ Could not load .env file: $e - AI insights will be disabled');
+  }
 }
 
 class BreatheFreeApp extends ConsumerStatefulWidget {
@@ -122,7 +154,15 @@ class _BreatheFreeAppState extends ConsumerState<BreatheFreeApp> {
         page = const JournalScreen();
         break;
       case '/journal/new':
-        page = const JournalEntryScreen();
+        final args = settings.arguments as Map<String, dynamic>?;
+        page = JournalEntryScreen(args: args);
+        break;
+      case '/smoking-detected':
+        final args = settings.arguments as SmokingDetectedArgs?;
+        page = SmokingDetectedScreen(args: args);
+        break;
+      case '/insights':
+        page = const InsightsScreen();
         break;
       case '/circle':
         page = const CircleScreen();

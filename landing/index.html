@@ -26,16 +26,101 @@
   <body>
     <!-- Hero Section -->
     <section class="hero">
-      <img src="assets/logo.png" alt="SmartQuit Logo" class="logo" />
-      <h1>SmartQuit</h1>
-      <p class="tagline">
-        A research-driven smoking cessation ecosystem combining the SmartQuit
-        Band wearable with BreatheFree companion app — powered by multimodal AI
-        analysis
-      </p>
-      <div class="cta-buttons">
-        <a href="#learn-more" class="cta-primary">Explore the Research</a>
-        <a href="analytics.html" class="cta-secondary">Analytics</a>
+      <div class="hero-content">
+        <div class="hero-left">
+          <div class="hero-badge">
+            <i data-lucide="sparkles"></i>
+            <span>Research-backed smoking cessation ecosystem</span>
+          </div>
+
+          <div class="brand-lockup">
+            <img src="assets/logo.png" alt="SmartQuit Logo" class="logo" />
+            <h1>SmartQuit</h1>
+          </div>
+
+          <p class="tagline">
+            A complete product experience combining the SmartQuit Band,
+            BreatheFree companion app, and multimodal AI detection to support
+            cravings in real time.
+          </p>
+
+          <div class="hero-highlights">
+            <div class="hero-highlight">
+              <strong>90%+</strong>
+              <span>event detection accuracy</span>
+            </div>
+            <div class="hero-highlight">
+              <strong>10</strong>
+              <span>evidence-based interventions</span>
+            </div>
+            <div class="hero-highlight">
+              <strong>3-way</strong>
+              <span>user, family & consultant insights</span>
+            </div>
+          </div>
+
+          <div class="cta-buttons">
+            <a href="#learn-more" class="cta-primary">Explore the Research</a>
+            <a
+              href="https://github.com/ShreyNagda/smartquit/releases"
+              class="cta-secondary"
+              >Get the App</a
+            >
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="hero-showcase">
+            <figure class="prototype-showcase">
+              <img
+                src="assets/prototype.jpeg"
+                alt="SmartQuit compact wearable prototype generated from our circuit design"
+              />
+              <figcaption>
+                Prototype concept generated from our real circuit design and AI
+                optimization to fit a compact wearable form factor.
+              </figcaption>
+            </figure>
+
+            <div class="product-visual">
+              <div class="device-card watch-card">
+                <div class="device-title">
+                  <i data-lucide="watch"></i>
+                  <span>SmartQuit Band</span>
+                </div>
+                <p>MQ9 + MPU6050 + ESP32</p>
+                <ul>
+                  <li>Gesture + smoke fusion</li>
+                  <li>On-device ML inference</li>
+                  <li>Low-power BLE sync</li>
+                </ul>
+              </div>
+
+              <div class="device-card app-card">
+                <div class="device-title">
+                  <i data-lucide="smartphone"></i>
+                  <span>BreatheFree App</span>
+                </div>
+                <p>Context-aware intervention engine</p>
+                <ul>
+                  <li>Panic mode support</li>
+                  <li>Mood and trigger journaling</li>
+                  <li>Progress dashboards</li>
+                </ul>
+              </div>
+
+              <div class="floating-chip chip-live">
+                <i data-lucide="zap"></i>
+                <span>Live craving response</span>
+              </div>
+
+              <div class="floating-chip chip-link">
+                <i data-lucide="bluetooth"></i>
+                <span>Secure BLE handoff</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -137,21 +222,21 @@
     <!-- Process Section -->
     <section class="process">
       <div class="container">
-        <h2 class="section-title">How It Works</h2>
+        <h2 class="section-title">How SmartQuit Helps Someone Quit</h2>
         <p class="section-subtitle">
-          Multimodal sensor fusion and behavioral intervention pipeline
+          The band detects risky moments, the app delivers immediate support,
+          and progress insights build confidence against addiction over time.
         </p>
 
         <div class="process-timeline">
           <div class="process-step">
             <div class="step-number">1</div>
             <div class="step-content">
-              <h3>Sensor Data Collection</h3>
+              <h3>What the SmartQuit Band Does</h3>
               <p>
-                ESP32 continuously reads MPU6050 accelerometer/gyroscope data at
-                50Hz and MQ9 gas sensor at 1Hz. The 6-axis IMU detects
-                hand-to-mouth gestures while the gas sensor identifies volatile
-                organic compounds from cigarette smoke.
+                The wearable continuously reads motion patterns (MPU6050) and
+                smoke signatures (MQ9). It recognizes likely smoking behavior in
+                real time instead of relying on manual self-reporting.
               </p>
             </div>
           </div>
@@ -159,12 +244,11 @@
           <div class="process-step">
             <div class="step-number">2</div>
             <div class="step-content">
-              <h3>Edge AI Inference</h3>
+              <h3>AI Decision on the Device</h3>
               <p>
-                On-device ML model (trained via Edge Impulse) performs spectral
-                analysis on sensor streams. When gesture pattern + smoke
-                signature align, the model classifies the event as "smoking"
-                with confidence score.
+                An on-device ML model fuses both signals and detects smoking
+                events with a confidence score. This allows fast, private,
+                low-latency detection without cloud dependency.
               </p>
             </div>
           </div>
@@ -172,11 +256,11 @@
           <div class="process-step">
             <div class="step-number">3</div>
             <div class="step-content">
-              <h3>BLE Notification</h3>
+              <h3>What the BreatheFree App Does</h3>
               <p>
-                SmartQuit Band sends encrypted event notification via Bluetooth
-                Low Energy to BreatheFree app. Only high-confidence events
-                (>85%) are transmitted, preserving battery life.
+                The app receives secure BLE alerts and immediately responds with
+                evidence-based interventions like breathing, mindfulness,
+                journaling, and urge-management tools.
               </p>
             </div>
           </div>
@@ -184,24 +268,12 @@
           <div class="process-step">
             <div class="step-number">4</div>
             <div class="step-content">
-              <h3>Immediate Intervention</h3>
+              <h3>How This Supports Addiction Recovery</h3>
               <p>
-                BreatheFree app prompts user to log triggers and mood state.
-                Launches contextual intervention (breathing, games, mindfulness)
-                based on detected emotional state and location.
-              </p>
-            </div>
-          </div>
-
-          <div class="process-step">
-            <div class="step-number">5</div>
-            <div class="step-content">
-              <h3>Multi-Stakeholder Insights</h3>
-              <p>
-                Dashboard analytics accessible to user, family members (with
-                consent), and rehab consultants. Temporal heatmaps, trigger
-                analysis, and progress metrics inform personalized support
-                strategies.
+                Users receive help exactly when cravings happen, build awareness
+                of their triggers, and track progress across days and weeks.
+                With consent, family and consultants can support the recovery
+                plan using objective insights.
               </p>
             </div>
           </div>

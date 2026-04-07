@@ -32,6 +32,12 @@ service cloud.firestore {
         allow read: if request.auth == null;
       }
 
+      // Insights subcollection (AI-generated insights)
+      match /insights/{insightId} {
+        // Only the owner can read and write their insights
+        allow read, write: if isOwner(userId);
+      }
+
       // Nudges subcollection
       match /nudges/{nudgeId} {
         // Owner can read their nudges
